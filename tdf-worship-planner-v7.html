@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>TDF Worship · Planificador</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#132589;--purple:#8740bf;--teal:#30dad8;--yellow:#f4cd27;--red:#ff004b;}
+[data-theme="dark"]{--bg:#0e0d12;--bg2:#13121a;--bg3:#1a1825;--surface:#1e1c2a;--surface2:#252336;--border:#2e2b42;--border2:#3d3a55;--text:#f0eeff;--text2:#a09cc0;--text3:#605c80;--text4:#3d3a55;--sh:0 2px 16px rgba(0,0,0,.4);--sh-lg:0 8px 40px rgba(0,0,0,.5);}
+[data-theme="light"]{--bg:#f4f3fb;--bg2:#eeecf8;--bg3:#e8e5f5;--surface:#fff;--surface2:#f0eeff;--border:#d4d0ec;--border2:#bab5d8;--text:#0d0b1a;--text2:#4a4570;--text3:#9590b8;--text4:#cac7e0;--sh:0 2px 12px rgba(19,37,137,.07);--sh-lg:0 8px 32px rgba(19,37,137,.14);}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden}
+button,select,input,textarea{font-family:'Poppins',sans-serif;cursor:pointer}
+input,select,textarea{outline:none}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── HEADER ── */
+header{background:var(--navy);height:52px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:500;box-shadow:0 2px 20px rgba(19,37,137,.5)}
+.brand{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+.brand-name{font-size:1rem;font-weight:800;color:#fff;white-space:nowrap}
+.brand-name span{color:var(--teal);font-weight:300}
+.brand-sep{width:1px;height:18px;background:rgba(255,255,255,.18);flex-shrink:0}
+.brand-sub{font-size:.52rem;font-weight:500;color:rgba(255,255,255,.38);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-right{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,.45);font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:6px;transition:all .18s;white-space:nowrap}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav-btn.active{color:var(--navy);background:var(--yellow);font-weight:700}
+.icon-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);width:28px;height:28px;border-radius:6px;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.icon-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+/* Auth pill */
+.auth-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 8px 3px 5px;cursor:pointer;transition:all .18s;margin-left:4px}
+.auth-pill:hover{background:rgba(255,255,255,.12)}
+.auth-avatar{width:18px;height:18px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;color:var(--navy)}
+.auth-name{font-size:.58rem;font-weight:600;color:rgba(255,255,255,.7)}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#0a1060,var(--navy) 45%,var(--purple));padding:14px 16px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(48,218,216,.1),transparent 65%);pointer-events:none}
+.hero-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hero-eye{font-size:.55rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:2px}
+.hero-title{font-size:1.35rem;font-weight:800;color:#fff;line-height:1.1}
+.hero-sub{font-size:.65rem;color:rgba(255,255,255,.38);margin-top:2px}
+.hero-stats{display:flex;gap:8px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 11px;text-align:center}
+.stat-n{font-size:1.05rem;font-weight:800;color:#fff;line-height:1}
+.stat-l{font-size:.5rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-top:1px}
+
+main{padding:12px 16px}
+.tab{display:none}.tab.active{display:block}
+
+/* ── MONTH NAV ── */
+.month-nav{display:flex;margin-bottom:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;overflow:hidden}
+.month-btn{flex:1;background:none;border:none;padding:7px 4px;font-size:.66rem;font-weight:600;color:var(--text3);transition:all .18s;white-space:nowrap;text-align:center;position:relative}
+.month-btn:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;background:var(--border)}
+.month-btn:hover{color:var(--text);background:var(--surface2)}
+.month-btn.active{color:#fff;background:var(--navy);font-weight:700}
+
+/* ── DOM GRID ── */
+.dom-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+@media(max-width:960px){.dom-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.dom-grid{grid-template-columns:1fr}}
+
+/* ── DOM CARD ── */
+.dom-card{background:var(--surface);border:1.5px solid var(--border);border-radius:11px;overflow:hidden;transition:border-color .2s,box-shadow .2s;box-shadow:var(--sh);animation:fadeUp .35s ease both}
+.dom-card:nth-child(1){animation-delay:.04s}.dom-card:nth-child(2){animation-delay:.08s}
+.dom-card:nth-child(3){animation-delay:.12s}.dom-card:nth-child(4){animation-delay:.16s}
+.dom-card:hover{border-color:var(--purple);box-shadow:var(--sh-lg)}
+.dom-card.empty{border-style:dashed;opacity:.6}
+.card-accent{height:3px}
+.acc-n{background:linear-gradient(90deg,var(--navy),var(--purple),var(--teal))}
+.acc-c{background:linear-gradient(90deg,var(--purple),var(--red),var(--yellow))}
+.acc-e{background:var(--border)}
+.card-head{background:var(--surface2);padding:7px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap}
+.card-fecha{font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
+[data-theme="light"] .card-fecha{color:var(--navy)}
+.card-badges{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.badge{font-size:.52rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:20px}
+.badge-n{background:var(--border);color:var(--text3)}
+.badge-c{background:linear-gradient(90deg,var(--purple),var(--red));color:#fff}
+.badge-out{font-size:.52rem;padding:2px 6px;border-radius:20px;font-weight:600;letter-spacing:.02em}
+.card-body{padding:9px 10px}
+.card-horario{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap}
+.hora-chip{font-size:.58rem;font-weight:700;background:var(--navy);color:#fff;padding:1px 7px;border-radius:4px}
+.llegada-txt{font-size:.56rem;color:var(--text3)}
+.card-tema{font-size:.82rem;font-weight:700;line-height:1.3;margin-bottom:2px}
+.card-lect{font-size:.62rem;color:var(--text3);margin-bottom:6px}
+.flujo{display:flex;align-items:center;gap:3px;flex-wrap:wrap;margin-bottom:7px}
+.fstep{font-size:.52rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 5px;border-radius:20px;background:rgba(135,64,191,.1);color:var(--purple);border:1px solid rgba(135,64,191,.18)}
+.farr{color:var(--text4);font-size:.52rem}
+
+/* Band + Voces */
+.band-section{margin-bottom:7px}
+.band-sec-label{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.band-row{display:flex;align-items:center;gap:4px;padding:1px 0}
+.b-ico{font-size:.66rem;width:12px;text-align:center;flex-shrink:0}
+.b-name{font-size:.68rem;color:var(--text2);font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.b-rol{font-size:.56rem;color:var(--text3);white-space:nowrap}
+.voz-lider-row{background:rgba(244,205,39,.1);border:1px solid rgba(244,205,39,.22);border-radius:5px;padding:2px 5px;margin:1px 0;display:flex;align-items:center;gap:4px}
+.voz-lider-name{font-size:.7rem;font-weight:700;color:var(--yellow);flex:1}
+.voz-lider-tag{background:var(--yellow);color:#000;padding:1px 5px;border-radius:3px;font-size:.48rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+.voz-empty{opacity:.28;font-style:italic}
+
+/* Setlist */
+.setlist-wrap{border-top:1px solid var(--border);padding-top:6px}
+.sl-lbl{font-size:.52rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.sl-legend{display:flex;gap:5px;margin-left:auto;flex-wrap:wrap}
+.sl-leg-item{display:flex;align-items:center;gap:2px;font-size:.48rem;color:var(--text3);white-space:nowrap}
+.sl-item{display:flex;align-items:center;gap:3px;padding:2px 0}
+.sl-num{font-size:.54rem;color:var(--text4);width:10px;flex-shrink:0;font-weight:600}
+.sl-ldr-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sl-name{font-size:.68rem;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sl-nota{font-size:.55rem;color:var(--text3);white-space:nowrap}
+.sl-planb{font-size:.52rem;color:var(--text3);font-style:italic;white-space:nowrap}
+.e-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.ea{background:var(--teal)}.em{background:var(--purple)}.eb{background:var(--text3)}
+.trans-mini{padding:1px 0 2px 13px;display:flex;align-items:center;gap:4px}
+.trans-chords{font-size:.52rem;color:var(--text3);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
+.trans-pill{font-size:.5rem;padding:1px 4px;border-radius:3px;background:rgba(48,218,216,.08);color:var(--teal);border:1px solid rgba(48,218,216,.18);white-space:nowrap;flex-shrink:0}
+
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:7px;padding-top:6px;border-top:1px solid var(--border)}
+.score-w{display:flex;align-items:center;gap:4px;flex:1}
+.sc-lbl{font-size:.52rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);white-space:nowrap}
+.sc-bar{flex:1;height:3px;background:var(--border);border-radius:2px}
+.sc-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--navy),var(--purple),var(--teal))}
+.sc-num{font-size:.6rem;font-weight:700;color:var(--purple)}
+.card-btns{display:flex;gap:4px;margin-left:5px;flex-shrink:0}
+.edit-btn{background:none;border:1.5px solid var(--border);border-radius:5px;padding:3px 7px;font-size:.56rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);transition:all .18s}
+.edit-btn:hover{border-color:var(--purple);color:var(--purple)}
+.export-btn{background:rgba(48,218,216,.08);border:1.5px solid rgba(48,218,216,.2);border-radius:5px;padding:3px 7px;font-size:.56rem;font-weight:700;color:var(--teal);transition:all .18s}
+.export-btn:hover{background:rgba(48,218,216,.18)}
+.empty-body{padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.empty-body p{font-size:.66rem;color:var(--text3)}
+.empty-add{font-size:.6rem;font-weight:700;padding:5px 10px;border-radius:6px;border:1.5px solid var(--purple);background:rgba(135,64,191,.08);color:var(--purple);transition:all .18s}
+.empty-add:hover{background:rgba(135,64,191,.16)}
+
+/* ── ENSAYO ── */
+.ens-layout{display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start}
+@media(max-width:820px){.ens-layout{grid-template-columns:1fr}}
+.ens-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.ens-title{font-size:1.1rem;font-weight:800}
+.ens-sub{font-size:.63rem;color:var(--text3);margin-top:1px}
+.add-ens{background:var(--purple);border:none;color:#fff;padding:6px 12px;border-radius:7px;font-size:.64rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.add-ens:hover{background:#7030af}
+.ens-list{display:flex;flex-direction:column;gap:9px}
+.ec{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--sh)}
+.ec-head{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.ec-fecha{font-size:.62rem;font-weight:700;color:var(--teal)}
+[data-theme="light"] .ec-fecha{color:var(--navy)}
+.ec-titulo{font-size:.82rem;font-weight:700}
+.ec-acts{display:flex;gap:4px}
+.ec-btn{background:none;border:1.5px solid var(--border);border-radius:5px;padding:2px 7px;font-size:.56rem;font-weight:700;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;transition:all .18s}
+.ec-btn:hover{border-color:var(--purple);color:var(--purple)}
+.ec-del{background:none;border:1.5px solid var(--border);border-radius:5px;padding:2px 5px;font-size:.66rem;color:var(--text3);transition:all .18s}
+.ec-del:hover{border-color:var(--red);color:var(--red)}
+.ec-body{padding:9px 11px;display:flex;flex-direction:column;gap:7px}
+.ec-lbl{font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.ens-song{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 8px}
+.esi-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.esi-num{font-size:.56rem;color:var(--text4);font-weight:700;width:13px;flex-shrink:0}
+.esi-name{font-size:.72rem;font-weight:600;flex:1;min-width:0}
+.esi-tono{font-size:.58rem;font-weight:700;background:var(--navy);color:#fff;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.esi-cls{font-size:.5rem;font-weight:700;padding:1px 5px;border-radius:3px}
+.esi-r{background:rgba(48,218,216,.1);color:var(--teal)}
+.esi-m{background:rgba(135,64,191,.1);color:var(--purple)}
+.esi-l{background:rgba(200,200,200,.06);color:var(--text3)}
+.esi-nueva{font-size:.5rem;font-weight:700;color:var(--teal);white-space:nowrap}
+.esi-links{display:flex;gap:3px;flex-wrap:wrap}
+.esi-link{font-size:.54rem;font-weight:600;padding:1px 5px;border-radius:3px;white-space:nowrap;display:inline-flex;align-items:center;gap:2px}
+.esi-link-pdf{background:rgba(100,120,255,.08);color:#8899ff;border:1px solid rgba(100,120,255,.2)}
+[data-theme="light"] .esi-link-pdf{background:rgba(19,37,137,.06);color:var(--navy);border-color:rgba(19,37,137,.15)}
+.esi-link-yt{background:rgba(255,0,75,.07);color:var(--red);border:1px solid rgba(255,0,75,.16)}
+.esi-link-seq{background:rgba(48,218,216,.07);color:var(--teal);border:1px solid rgba(48,218,216,.18)}
+.trans-block{background:linear-gradient(90deg,rgba(135,64,191,.05),rgba(48,218,216,.05));border:1px solid rgba(135,64,191,.15);border-radius:5px;padding:6px 8px;margin:2px 0}
+.tb-head{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:4px;flex-wrap:wrap}
+.tb-title{font-size:.54rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--purple)}
+.tb-tags{display:flex;gap:3px;flex-wrap:wrap}
+.tb-tag{font-size:.52rem;font-weight:600;padding:1px 5px;border-radius:20px;background:var(--bg2);color:var(--text3);border:1px solid var(--border2)}
+.tb-tag.tono{border-color:rgba(48,218,216,.28);color:var(--teal);background:rgba(48,218,216,.06)}
+.tb-tag.ritmo{border-color:rgba(135,64,191,.28);color:var(--purple);background:rgba(135,64,191,.06)}
+.tb-acordes{font-family:monospace;font-size:.68rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.tb-tecnica{font-size:.65rem;color:var(--text2);line-height:1.4;margin-bottom:2px}
+.tb-palabras{font-size:.65rem;color:var(--text2);font-style:italic;line-height:1.4;padding:3px 6px;background:var(--bg2);border-radius:4px;border-left:2px solid var(--purple)}
+.tb-btns{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap}
+.tb-btn{font-size:.52rem;font-weight:700;padding:2px 7px;border-radius:4px;transition:all .18s}
+.tb-edit{color:var(--text3);background:none;border:1px solid var(--border)}
+.tb-edit:hover{border-color:var(--purple);color:var(--purple)}
+.tb-gemini{background:linear-gradient(90deg,var(--navy),var(--purple));border:none;color:#fff}
+.tb-gemini:hover{opacity:.85}
+
+/* Ruta sidebar */
+.ruta-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--sh);position:sticky;top:64px}
+.ruta-head{background:linear-gradient(135deg,var(--navy),var(--purple));padding:10px 13px}
+.ruta-title{font-size:.82rem;font-weight:700;color:#fff}
+.ruta-sub{font-size:.56rem;color:rgba(255,255,255,.5)}
+.ruta-body{padding:10px 13px;display:flex;flex-direction:column;gap:7px}
+.ruta-item{display:flex;gap:8px;align-items:flex-start}
+.rd{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;flex-shrink:0;margin-top:1px}
+.rd-n{background:rgba(48,218,216,.14);color:var(--teal);border:1.5px solid rgba(48,218,216,.28)}
+.rd-i{background:rgba(135,64,191,.14);color:var(--purple);border:1.5px solid rgba(135,64,191,.28)}
+.rd-a{background:rgba(100,120,255,.1);color:#aabbff;border:1.5px solid rgba(100,120,255,.25)}
+.ruta-song{font-size:.72rem;font-weight:700}
+.ruta-desc{font-size:.6rem;color:var(--text3);margin-top:1px}
+.ruta-ph{font-size:.52rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 5px;border-radius:20px;margin-top:2px;display:inline-block}
+.rp-n{background:rgba(48,218,216,.1);color:var(--teal)}
+.rp-i{background:rgba(135,64,191,.1);color:var(--purple)}
+.rp-a{background:rgba(100,120,255,.08);color:#aabbff}
+[data-theme="light"] .rp-a{color:#4455cc}
+/* Cronograma */
+.crono-wrap{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.crono-col{padding:9px 12px}
+.crono-col:first-child{border-right:1px solid var(--border)}
+.crono-sec-label{font-size:.56rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.crono-row{display:flex;gap:6px;padding:3px 0;border-bottom:1px solid var(--border);align-items:baseline}
+.crono-row:last-child{border-bottom:none}
+.crono-hora{font-size:.6rem;font-weight:700;color:var(--text);white-space:nowrap;min-width:58px}
+.crono-act{font-size:.6rem;color:var(--text2);line-height:1.3}
+
+/* ── EQUIPO ── */
+.eq-sec{margin-bottom:18px}
+.eq-sec-t{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid var(--purple);display:inline-block}
+.eq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:8px}
+.eq-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px;box-shadow:var(--sh);animation:fadeUp .35s ease both;transition:border-color .2s}
+.eq-card:hover{border-color:var(--border2)}
+.eq-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--purple));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;margin-bottom:5px}
+.eq-name{font-size:.78rem;font-weight:700;margin-bottom:4px}
+.eq-roles{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.eq-role{display:flex;align-items:center;gap:4px}
+.eq-role-n{font-size:.63rem;color:var(--text2);font-weight:500;flex:1}
+.lp{font-size:.5rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 5px;border-radius:20px}
+.lp-e{background:rgba(48,218,216,.12);color:var(--teal);border:1px solid rgba(48,218,216,.2)}
+.lp-a{background:rgba(135,64,191,.12);color:var(--purple);border:1px solid rgba(135,64,191,.2)}
+.lp-f{background:rgba(244,205,39,.1);color:#8a6e00;border:1px solid rgba(244,205,39,.2)}
+[data-theme="dark"] .lp-f{color:var(--yellow)}
+.eq-afines{margin-top:4px;display:flex;flex-wrap:wrap;gap:2px}
+.afin-chip{font-size:.5rem;padding:1px 5px;border-radius:20px;background:rgba(48,218,216,.06);color:var(--teal);border:1px solid rgba(48,218,216,.18)}
+.eq-disp{padding-top:6px;border-top:1px solid var(--border)}
+.eq-disp-l{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.disp-chips{display:flex;gap:3px;flex-wrap:wrap}
+.dtog{font-size:.54rem;font-weight:600;padding:2px 6px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text3);transition:all .18s}
+.dtog.on{background:rgba(48,218,216,.1);color:var(--teal);border-color:rgba(48,218,216,.25)}
+.dtog.pend{background:rgba(244,205,39,.06);color:#8a6e00;border-color:rgba(244,205,39,.2);font-style:italic}
+[data-theme="dark"] .dtog.pend{color:var(--yellow)}
+.eq-footer{margin-top:6px;display:flex;gap:4px}
+.eq-edit-btn{flex:1;font-size:.54rem;font-weight:700;padding:3px 6px;border-radius:5px;border:1.5px solid var(--border);background:none;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;transition:all .18s}
+.eq-edit-btn:hover{border-color:var(--purple);color:var(--purple)}
+.eq-add{background:var(--surface);border:1.5px dashed var(--border2);border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text3);font-size:.64rem;font-weight:600;min-height:96px;transition:all .18s}
+.eq-add:hover{border-color:var(--purple);color:var(--purple);background:rgba(135,64,191,.04)}
+
+/* ── REPERTORIO ── */
+.song-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px}
+.song-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--sh);transition:border-color .2s;animation:fadeUp .28s ease both}
+.song-card:hover{border-color:var(--purple)}
+.sc-head{background:var(--surface2);padding:8px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.sc-name{font-size:.76rem;font-weight:700;line-height:1.3}
+.sc-artist{font-size:.6rem;color:var(--text3);margin-top:1px}
+.sc-tono{font-size:.62rem;font-weight:700;background:var(--navy);color:#fff;padding:2px 6px;border-radius:4px;cursor:pointer;white-space:nowrap}
+.sc-tono:hover{background:#1a2fa8}
+.new-b{font-size:.48rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(90deg,var(--teal),var(--purple));color:#fff;padding:1px 5px;border-radius:20px;vertical-align:middle;margin-left:3px}
+.diff-b{font-size:.48rem;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:2px;vertical-align:middle}
+.df{background:rgba(48,218,216,.12);color:var(--teal)}.dm{background:rgba(135,64,191,.12);color:var(--purple)}.dd{background:rgba(255,0,75,.12);color:var(--red)}
+.sc-body{padding:8px 10px}
+.sc-meta-row{display:flex;gap:7px;margin-bottom:6px;flex-wrap:wrap;align-items:flex-end}
+.sm-l{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.sm-in{font-size:.66rem;font-weight:600;color:var(--text);background:transparent;border:none;border-bottom:1px dashed var(--border2);width:42px;padding:0 2px}
+.sm-in:focus{border-bottom-color:var(--purple)}
+.sm-sel{font-size:.64rem;font-weight:600;color:var(--text2);background:transparent;border:none;border-bottom:1px dashed var(--border2);padding:0 2px}
+.sm-sel:focus{border-bottom-color:var(--purple)}
+.e-segs{display:flex;gap:2px;align-items:center}
+.e-seg{width:12px;height:3px;border-radius:2px;background:var(--border)}
+.e-seg.ea{background:var(--teal)}.e-seg.em{background:var(--purple)}.e-seg.eb{background:var(--navy)}
+.sc-tema{font-size:.64rem;color:var(--text2);padding:3px 6px;background:var(--surface2);border-radius:4px;border-left:2px solid var(--purple);margin-bottom:6px}
+.sc-res{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px}
+.res{font-size:.5rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 5px;border-radius:20px;background:var(--border);color:var(--text3)}
+.res.on{background:rgba(48,218,216,.1);color:var(--teal);border:1px solid rgba(48,218,216,.2)}
+/* Song links - prominent */
+.sc-links{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.sl{font-size:.58rem;font-weight:600;padding:4px 8px;border-radius:5px;transition:all .18s;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;border:1.5px solid transparent}
+.sl-yt{background:rgba(255,0,75,.08);color:var(--red);border-color:rgba(255,0,75,.2)}
+.sl-yt:hover{background:rgba(255,0,75,.16)}
+.sl-pt{background:rgba(100,120,255,.08);color:#8899ff;border-color:rgba(100,120,255,.22)}
+[data-theme="light"] .sl-pt{background:rgba(19,37,137,.06);color:var(--navy);border-color:rgba(19,37,137,.18)}
+.sl-pt:hover{opacity:.8}
+.sl-sq{background:rgba(48,218,216,.08);color:var(--teal);border-color:rgba(48,218,216,.22)}
+.sl-sq:hover{background:rgba(48,218,216,.16)}
+.sc-row-foot{display:flex;align-items:center;justify-content:space-between;padding-top:5px;border-top:1px solid var(--border)}
+.sc-edit-btn{font-size:.52rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);background:none;border:1.5px solid var(--border);border-radius:5px;padding:3px 7px;transition:all .18s}
+.sc-edit-btn:hover{border-color:var(--purple);color:var(--purple)}
+.sc-saved{font-size:.52rem;font-weight:700;color:var(--teal);display:none}
+.sc-saved.show{display:block}
+
+/* ── PANEL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(3px)}
+.overlay.open{opacity:1;pointer-events:all}
+.panel{position:fixed;right:0;top:0;bottom:0;width:440px;max-width:100vw;background:var(--surface);z-index:601;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:flex;flex-direction:column;box-shadow:-10px 0 50px rgba(0,0,0,.3)}
+.panel.open{transform:translateX(0)}
+.ph{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:10}
+.ph-t{font-size:.88rem;font-weight:700;color:#fff}
+.ph-s{font-size:.56rem;color:var(--teal);margin-top:1px}
+.ph-x{background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:6px;font-size:.88rem;display:flex;align-items:center;justify-content:center;transition:background .18s}
+.ph-x:hover{background:rgba(255,255,255,.2)}
+.pb{padding:14px 16px;flex:1}
+.ps{margin-bottom:15px}
+.ps-t{font-size:.54rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin-bottom:6px;padding-bottom:4px;border-bottom:1.5px solid var(--border)}
+.fr{margin-bottom:8px}
+.fl{font-size:.6rem;font-weight:600;color:var(--text2);margin-bottom:2px;display:block}
+.fi{width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:.75rem;color:var(--text);background:var(--bg2);transition:border-color .18s}
+.fi:focus{border-color:var(--purple)}
+.fta{width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:.72rem;color:var(--text);background:var(--bg2);resize:vertical;min-height:60px}
+.fta:focus{border-color:var(--purple)}
+.fs{width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:.75rem;color:var(--text);background:var(--bg2)}
+.fs:focus{border-color:var(--purple)}
+.outfit-row{display:flex;gap:6px;align-items:center}
+.cswatch{width:30px;height:30px;border-radius:6px;border:2px solid var(--border);padding:2px;background:none;flex-shrink:0}
+.edit-rows{display:flex;flex-direction:column;gap:3px}
+.er{display:flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 7px}
+.er-ico{font-size:.7rem;width:13px;text-align:center;flex-shrink:0}
+.er-sel{flex:1;border:none;background:transparent;font-size:.72rem;font-weight:600;color:var(--text);min-width:0}
+.er-in{border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:.63rem;background:var(--bg3);color:var(--text2)}
+.er-wide{flex:1;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:.63rem;background:var(--bg3);color:var(--text2)}
+.er-del{background:none;border:none;color:var(--text4);font-size:.78rem;transition:color .18s;flex-shrink:0}
+.er-del:hover{color:var(--red)}
+.add-row{width:100%;background:none;border:1.5px dashed var(--border2);border-radius:6px;padding:5px;font-size:.65rem;font-weight:600;color:var(--text3);transition:all .18s;margin-top:3px;display:flex;align-items:center;justify-content:center;gap:4px}
+.add-row:hover{border-color:var(--purple);color:var(--purple);background:rgba(135,64,191,.04)}
+.pf{padding:11px 16px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;position:sticky;bottom:0;background:var(--surface)}
+.btn-s{flex:1;background:var(--navy);border:none;color:#fff;padding:8px;border-radius:7px;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;transition:background .18s}
+.btn-s:hover{background:#1a2fa8}
+.btn-c{background:none;border:1.5px solid var(--border);color:var(--text3);padding:8px 12px;border-radius:7px;font-size:.7rem;font-weight:600;transition:all .18s}
+.btn-c:hover{border-color:var(--text2);color:var(--text2)}
+.btn-d{background:none;border:1.5px solid rgba(255,0,75,.25);color:var(--red);padding:5px 10px;border-radius:6px;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;transition:all .18s}
+.btn-d:hover{background:rgba(255,0,75,.08)}
+
+/* Voz líder panel selector */
+.voz-row-editor{display:flex;align-items:center;gap:4px;padding:5px 7px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);margin-bottom:3px}
+.voz-row-editor.is-lider{background:rgba(244,205,39,.07);border-color:rgba(244,205,39,.28)}
+.voz-lider-ico{font-size:.72rem;width:14px;text-align:center;flex-shrink:0}
+
+/* AI row */
+.ai-row{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(19,37,137,.1),rgba(135,64,191,.1));border:1px solid rgba(135,64,191,.2);border-radius:7px;padding:6px 10px;margin-bottom:8px}
+.ai-txt{font-size:.66rem;color:var(--text2);font-weight:500}
+.ai-btn{border:none;color:#fff;padding:4px 9px;border-radius:5px;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;transition:opacity .18s}
+.ai-btn.claude{background:linear-gradient(90deg,var(--navy),var(--purple))}
+.ai-btn.suggest{background:linear-gradient(90deg,var(--teal),var(--navy))}
+.ai-btn:hover{opacity:.85}
+
+/* Suggest box */
+.suggest-box{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;margin-bottom:10px;display:none}
+.suggest-title{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.suggest-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid var(--border)}
+.suggest-row:last-of-type{border-bottom:none}
+.suggest-song{font-size:.72rem;font-weight:600}
+.suggest-meta{font-size:.58rem;color:var(--text3);margin-top:1px}
+.suggest-ldr{font-size:.58rem;color:var(--teal);margin-top:1px}
+.suggest-use{font-size:.56rem;font-weight:700;background:rgba(48,218,216,.1);color:var(--teal);border:1px solid rgba(48,218,216,.25);border-radius:4px;padding:2px 7px;transition:all .18s;flex-shrink:0}
+.suggest-use:hover{background:rgba(48,218,216,.2)}
+.suggest-apply-all{width:100%;margin-top:7px;background:rgba(48,218,216,.1);color:var(--teal);border:1.5px solid rgba(48,218,216,.3);border-radius:6px;padding:5px;font-size:.63rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;transition:all .18s}
+.suggest-apply-all:hover{background:rgba(48,218,216,.2)}
+
+/* Auth modal */
+.auth-modal{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none}
+.auth-modal.open{display:flex}
+.auth-box{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:28px 24px;width:300px;box-shadow:var(--sh-lg);text-align:center}
+.auth-logo{font-size:1.4rem;font-weight:800;color:var(--navy);margin-bottom:4px}
+.auth-logo span{color:var(--teal);font-weight:300}
+[data-theme="dark"] .auth-logo{color:#fff}
+.auth-subtitle{font-size:.7rem;color:var(--text3);margin-bottom:20px}
+.auth-input{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:.8rem;color:var(--text);background:var(--bg2);margin-bottom:10px;transition:border-color .18s}
+.auth-input:focus{border-color:var(--purple);outline:none}
+.auth-submit{width:100%;background:var(--navy);border:none;color:#fff;padding:9px;border-radius:7px;font-size:.76rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;margin-bottom:8px}
+.auth-submit:hover{background:#1a2fa8}
+.auth-cancel{font-size:.66rem;color:var(--text3);background:none;border:none;text-decoration:underline;cursor:pointer}
+.auth-error{font-size:.66rem;color:var(--red);margin-bottom:8px;display:none}
+
+/* Export overlay */
+.export-modal{position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+.export-modal.open{display:flex}
+.export-box{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:20px;max-width:360px;width:calc(100vw - 32px);box-shadow:var(--sh-lg)}
+.export-title{font-size:.88rem;font-weight:700;margin-bottom:4px}
+.export-sub{font-size:.66rem;color:var(--text3);margin-bottom:14px}
+.export-preview{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:.72rem;line-height:1.6;margin-bottom:14px;max-height:300px;overflow-y:auto;white-space:pre-wrap;font-family:monospace;color:var(--text2)}
+.export-actions{display:flex;gap:8px}
+.export-copy{flex:1;background:var(--purple);border:none;color:#fff;padding:8px;border-radius:7px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:background .18s}
+.export-copy:hover{background:#7030af}
+.export-close{background:none;border:1.5px solid var(--border);color:var(--text3);padding:8px 12px;border-radius:7px;font-size:.7rem;font-weight:600;transition:all .18s}
+.export-close:hover{border-color:var(--text2);color:var(--text2)}
+/* Lock icon for editor-only elements */
+.editor-only{display:none}
+.is-editor .editor-only{display:initial}
+.is-editor button.editor-only{display:flex}
+.is-editor .edit-btn{display:block}
+.viewer-mode .edit-btn{display:none}
+.viewer-mode .export-btn{display:block}
+.gemini-key-row{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:10px}
+.gemini-key-row label{font-size:.58rem;font-weight:600;color:var(--text3);white-space:nowrap}
+.gemini-key-row input{flex:1;border:none;background:transparent;font-size:.7rem;color:var(--text)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:540px){
+  main{padding:10px 12px}
+  .hero{padding:12px}
+  .hero-title{font-size:1.15rem}
+  .hero-stats{display:none}
+  .hdr-right .nav-btn{padding:4px 6px;font-size:.58rem}
+  .brand-sep,.brand-sub{display:none}
+  .panel{width:100%;max-width:100vw}
+  .ens-layout{grid-template-columns:1fr}
+  .ruta-card{position:static}
+  .crono-wrap{grid-template-columns:1fr}
+  .crono-col:first-child{border-right:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="brand-name">TDF <span>Worship</span></div>
+    <div class="brand-sep"></div>
+    <div class="brand-sub">Planificador · Jhonatan Pardo</div>
+  </div>
+  <div class="hdr-right">
+    <button class="nav-btn active" onclick="showTab('mes')">Mes</button>
+    <button class="nav-btn" onclick="showTab('ensayo')">Ensayos</button>
+    <button class="nav-btn" onclick="showTab('equipo')">Equipo</button>
+    <button class="nav-btn" onclick="showTab('canciones')">Repertorio</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+    <div class="auth-pill" onclick="toggleAuth()" id="auth-pill">
+      <div class="auth-avatar" id="auth-av">?</div>
+      <span class="auth-name" id="auth-name">Ingresar</span>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eye" id="h-eye">Planificación mensual</div>
+      <div class="hero-title" id="h-title">Junio 2025</div>
+      <div class="hero-sub" id="h-sub">4 servicios planificados</div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n" id="stat-d">4</div><div class="stat-l">Domingos</div></div>
+      <div class="stat"><div class="stat-n">12</div><div class="stat-l">Servidores</div></div>
+      <div class="stat"><div class="stat-n">25</div><div class="stat-l">Canciones</div></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="tab-mes" class="tab active">
+    <div class="month-nav" id="month-nav"></div>
+    <div class="dom-grid" id="dom-grid"></div>
+  </section>
+  <section id="tab-ensayo" class="tab">
+    <div class="gemini-key-row"><label>🔑 Gemini</label><input type="password" id="gemini-key" placeholder="AIza... (opcional)" oninput="GEMINI_KEY=this.value;localStorage.setItem('tdf_gk',this.value)"></div>
+    <details style="margin-bottom:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;overflow:hidden">
+      <summary style="padding:9px 13px;font-size:.7rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text2)">⏰ Cronograma oficial TDF <span style="margin-left:auto;font-size:.58rem;color:var(--text3);font-weight:400">clic para ver</span></summary>
+      <div class="crono-wrap">
+        <div class="crono-col"><div class="crono-sec-label" style="color:var(--purple)">Ensayo semanal</div><div id="crono-ensayo"></div></div>
+        <div class="crono-col"><div class="crono-sec-label" style="color:var(--teal)">Domingo · Culto</div><div id="crono-culto"></div></div>
+      </div>
+    </details>
+    <div class="ens-layout">
+      <div>
+        <div class="ens-hdr">
+          <div><div class="ens-title">Ruta de Ensayos</div><div class="ens-sub">Plan estratégico · Jun–Sep 2025</div></div>
+          <button class="add-ens editor-only" onclick="openNuevoEnsayo()">+ Ensayo</button>
+        </div>
+        <div class="ens-list" id="ens-list"></div>
+      </div>
+      <div class="ruta-card">
+        <div class="ruta-head"><div class="ruta-title">Canciones nuevas</div><div class="ruta-sub">Progresión Jun–Sep</div></div>
+        <div class="ruta-body" id="ruta-body"></div>
+      </div>
+    </div>
+  </section>
+  <section id="tab-equipo" class="tab">
+    <div class="eq-sec"><div class="eq-sec-t">Voces</div><div class="eq-grid" id="g-voces"></div></div>
+    <div class="eq-sec"><div class="eq-sec-t">Músicos</div><div class="eq-grid" id="g-musicos"></div></div>
+  </section>
+  <section id="tab-canciones" class="tab">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;gap:8px;flex-wrap:wrap">
+      <div><div style="font-size:1.05rem;font-weight:800">Repertorio</div><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:1px">25 canciones · Edición directa</div></div>
+      <button class="editor-only" onclick="openNuevaSong()" style="background:var(--purple);border:none;color:#fff;padding:5px 11px;border-radius:7px;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">+ Canción</button>
+    </div>
+    <div class="song-grid" id="song-grid"></div>
+  </section>
+</main>
+
+<!-- Auth modal -->
+<div class="auth-modal" id="auth-modal">
+  <div class="auth-box">
+    <div class="auth-logo">TDF <span>Worship</span></div>
+    <div class="auth-subtitle">Acceso para editores</div>
+    <div class="auth-error" id="auth-error">PIN incorrecto</div>
+    <input class="auth-input" type="password" id="auth-pin" placeholder="PIN de acceso" maxlength="8" onkeydown="if(event.key==='Enter')submitAuth()">
+    <button class="auth-submit" onclick="submitAuth()">Entrar como editor</button>
+    <button class="auth-cancel" onclick="closeAuth()">Solo ver (modo lector)</button>
+  </div>
+</div>
+
+<!-- Export modal -->
+<div class="export-modal" id="export-modal">
+  <div class="export-box">
+    <div class="export-title">📤 Exportar para WhatsApp</div>
+    <div class="export-sub">Copia el texto y pégalo en el grupo — listo para el lunes</div>
+    <div class="export-preview" id="export-text"></div>
+    <div class="export-actions">
+      <button class="export-copy" onclick="copyExport()">📋 Copiar</button>
+      <button class="export-close" onclick="document.getElementById('export-modal').classList.remove('open')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel -->
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="ph"><div><div class="ph-t" id="ph-t">Editar</div><div class="ph-s" id="ph-s"></div></div><button class="ph-x" onclick="closePanel()">✕</button></div>
+  <div class="pb" id="pb"></div>
+  <div class="pf"><button class="btn-c" onclick="closePanel()">Cancelar</button><button class="btn-s" id="btn-s" onclick="savePanel()">Guardar</button></div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════
+// MUSIC ENGINE — círculo de quintas, transiciones, sugerencias
+// ═══════════════════════════════════════════════════════
+
+// Círculo de quintas completo (incluyendo enarmónicos)
+const CIRCLE = ['C','G','D','A','E','B','F#','Db','Ab','Eb','Bb','F'];
+const CIRCLE_IDX = {};
+CIRCLE.forEach((n,i)=>{ CIRCLE_IDX[n]=i; CIRCLE_IDX[n+'m']=i; });
+// Enarmónicos
+const ENHARMONIC = {'C#':'Db','Gb':'F#','Cb':'B','Fb':'E','Ab':'Ab','Eb':'Eb','Bb':'Bb','F#':'F#','G#':'Ab','D#':'Eb','A#':'Bb'};
+function normTone(t){
+  if(!t) return 'C';
+  const base=t.replace(/m$/,'').trim();
+  return ENHARMONIC[base]||base;
+}
+function toneDistance(a,b){
+  const ai=CIRCLE_IDX[normTone(a)];
+  const bi=CIRCLE_IDX[normTone(b)];
+  if(ai===undefined||bi===undefined) return 6;
+  const d=Math.abs(ai-bi);
+  return Math.min(d,12-d);
+}
+
+// Acordes pivot entre dos tonos (simplificado)
+function pivotChords(fromTone,toTone){
+  const f=normTone(fromTone), t=normTone(toTone);
+  const dist=toneDistance(f,t);
+  if(dist===0) return [f]; // mismo tono
+  if(dist===1){ // quinta arriba o abajo
+    const fi=CIRCLE_IDX[f];
+    const ti=CIRCLE_IDX[t];
+    const goRight=(ti-fi+12)%12===1;
+    return goRight?[f,t]:[f,t]; // directo via dominante
+  }
+  if(dist===2){ // segunda mayor, usar acorde pivot
+    const mid=CIRCLE[(CIRCLE_IDX[f]+1)%12];
+    return [f,mid,t];
+  }
+  if(dist<=4){
+    const mid1=CIRCLE[(CIRCLE_IDX[f]+Math.floor(dist/2))%12];
+    return [f,mid1,t];
+  }
+  // Cambio grande: usar relativo menor como pivot
+  return [f,'(pausa/pad)',t];
+}
+
+// Sugerencia de técnica de transición
+function transitionTech(songA, songB){
+  const bpmDelta=Math.abs((songB.bpm||80)-(songA.bpm||80));
+  const tDist=toneDistance(songA.tono,songB.tono);
+  const energyMap={Alta:3,Media:2,Baja:1};
+  const eA=energyMap[songA.energia]||2;
+  const eB=energyMap[songB.energia]||2;
+  const eDelta=eB-eA;
+
+  let tecnica='';
+  if(tDist===0 && bpmDelta<15 && Math.abs(eDelta)<=1)
+    tecnica='Transición directa — mismo tono, tempo similar';
+  else if(tDist<=1 && bpmDelta<20)
+    tecnica='Pausa breve + entrada directa — tonos relativos';
+  else if(eDelta<-1) // bajando energía
+    tecnica='Ritardando progresivo → pad sostenido → entrada suave';
+  else if(eDelta>1) // subiendo energía
+    tecnica='Acelerando sutilmente → hit de banda → entrada fuerte';
+  else if(tDist>=4)
+    tecnica='Pad extendido en tono destino (8 compases) → entrada gradual';
+  else if(bpmDelta>30)
+    tecnica='Click de transición + pad → nuevo tempo establecido por batería';
+  else
+    tecnica='Acorde pivot → pausa de 2 tiempos → entrada nueva tonalidad';
+
+  return tecnica;
+}
+
+// Construir sugerencia de transición local completa
+function buildLocalTransition(songA, songB){
+  const chords=pivotChords(songA.tono,songB.tono);
+  const tech=transitionTech(songA,songB);
+  const bpmDelta=(songB.bpm||80)-(songA.bpm||80);
+  const bpmNote=bpmDelta===0?'Mismo tempo'
+    :bpmDelta>0?`Subir ${bpmDelta} BPM gradualmente`
+    :`Bajar ${Math.abs(bpmDelta)} BPM gradualmente`;
+  return {
+    acordes: chords.join(' → '),
+    tecnica: tech,
+    tempo: bpmNote,
+    distancia: toneDistance(songA.tono,songB.tono),
+    palabras: '' // se llena con Gemini si se activa
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// SUGERENCIA AUTOMÁTICA DE SETLIST
+// ═══════════════════════════════════════════════════════
+
+// Puntuación de compatibilidad entre dos canciones consecutivas
+function songCompatScore(songA, songB){
+  const tDist=toneDistance(songA.tono,songB.tono);
+  const bpmDelta=Math.abs((songB.bpm||80)-(songA.bpm||80));
+  const energyMap={Alta:3,Media:2,Baja:1};
+  const eA=energyMap[songA.energia]||2;
+  const eB=energyMap[songB.energia]||2;
+  // Penalizar saltos tonales grandes
+  const tonoScore=Math.max(0,10-tDist*2);
+  // Penalizar saltos de BPM grandes
+  const bpmScore=Math.max(0,10-Math.floor(bpmDelta/10));
+  // Flujo de energía preferido: igual o bajando suavemente
+  const energyScore=eB<=eA?8:eB===eA+1?5:2;
+  return tonoScore+bpmScore+energyScore;
+}
+
+// Dado un flujo deseado [Rápida, Media, Lenta] y tema, sugerir setlist
+function suggestSetlist(flujoTarget, temaSermón, historicoUso, allCanciones, vocesDiponibles){
+  const FLUJO_ENERGY = {Rápida:'Alta', Media:'Media', Lenta:'Baja'};
+  const result=[];
+  const usadas=new Set();
+
+  for(const tipo of flujoTarget){
+    const energiaTarget=FLUJO_ENERGY[tipo]||'Media';
+    // Filtrar candidatas
+    let candidatas=allCanciones.filter(c=>{
+      if(usadas.has(c.id)) return false;
+      if(c.nuevo) return false; // no poner nuevas en domingo si no están listas
+      return c.clasificacion===tipo || c.energia===energiaTarget;
+    });
+    // Ordenar por: uso reciente (penalizar), compatibilidad tonal con anterior, afinidad tema
+    const prev=result[result.length-1];
+    candidatas=candidatas.map(c=>{
+      let score=50;
+      if(prev) score+=songCompatScore(prev,c);
+      // Penalizar uso reciente
+      const uses=historicoUso[c.id]||0;
+      score-=uses*3;
+      // Bonus si el tema de la canción contiene palabras del tema del sermón
+      if(temaSermón){
+        const palabrasSermón=temaSermón.toLowerCase().split(/\s+/);
+        const temaCancion=(c.tema||'').toLowerCase();
+        const match=palabrasSermón.filter(p=>p.length>3&&temaCancion.includes(p)).length;
+        score+=match*8;
+      }
+      return {...c,_score:score};
+    });
+    candidatas.sort((a,b)=>b._score-a._score);
+    const elegida=candidatas[0];
+    if(elegida){
+      usadas.add(elegida.id);
+      // Sugerir líder según registro vocal
+      const lider=suggestLeader(elegida,vocesDiponibles);
+      result.push({...elegida,_tipo:tipo,_lider:lider,_score:elegida._score});
+    }
+  }
+  return result;
+}
+
+// ═══════════════════════════════════════════════════════
+// LÍDER DE CANCIÓN — por artista original + registro vocal
+// ═══════════════════════════════════════════════════════
+
+// Rangos vocales típicos en tono relativo
+const VOCAL_RANGES = {
+  soprano:    {min:60,max:84},  // C4–C6
+  mezzosopr:  {min:57,max:81},  // A3–A5
+  contralto:  {min:53,max:77},  // F3–F5
+  tenor:      {min:48,max:72},  // C3–C5
+  barítono:   {min:45,max:69},  // A2–A4
+  bajo:       {min:40,max:64},  // E2–E4
+};
+
+// MIDI note de una tonalidad base (octava 4 como referencia)
+const TONE_MIDI={'C':60,'G':67,'D':62,'A':69,'E':64,'B':71,'F#':66,'Db':61,'Ab':68,'Eb':63,'Bb':70,'F':65};
+
+function toneInRange(tono, registro){
+  const midi=TONE_MIDI[normTone(tono)]||60;
+  const range=VOCAL_RANGES[registro?.toLowerCase()]||{min:50,max:80};
+  return midi>=range.min && midi<=range.max;
+}
+
+function suggestLeader(cancion, vocesDisp){
+  if(!vocesDisp||vocesDisp.length===0) return null;
+
+  // 1) Revisar si alguna voz tiene esta canción en su lista de canciones afines
+  const voiceAfin=vocesDisp.find(v=>
+    v.cancionesAfines&&v.cancionesAfines.some(n=>n.toLowerCase()===cancion.nombre.toLowerCase())
+  );
+  if(voiceAfin) return voiceAfin.nombre;
+
+  // 2) Match por artista original
+  const artista=(cancion.artista||'').toLowerCase();
+  const voiceArtist=vocesDisp.find(v=>
+    v.artistasAfines&&v.artistasAfines.some(a=>artista.includes(a.toLowerCase()))
+  );
+  if(voiceArtist) return voiceArtist.nombre;
+
+  // 3) Match por registro vocal y tonalidad
+  const voiceRange=vocesDisp.find(v=>
+    v.registro&&toneInRange(cancion.tono,v.registro)
+  );
+  if(voiceRange) return voiceRange.nombre;
+
+  // 4) Default: primera voz disponible con nivel Experto
+  const experto=vocesDisp.find(v=>v.roles.some(r=>r.n==='Experto'));
+  return experto?experto.nombre:vocesDisp[0]?.nombre||null;
+}
+
+// ═══════════════════════════════════════════════════════
+// HISTORIAL DE USO — contador simple
+// ═══════════════════════════════════════════════════════
+function buildUsageHistory(allDomingos){
+  const hist={};
+  for(const mes of Object.values(allDomingos)){
+    for(const d of mes){
+      if(!d) continue;
+      for(const c of (d.canciones||[])){
+        const cd=CANCIONES.find(x=>x.nombre===c.nombre);
+        if(cd) hist[cd.id]=(hist[cd.id]||0)+1;
+      }
+    }
+  }
+  return hist;
+}
+
+// Exportar para uso en la app
+window.MUSIC_ENGINE={
+  buildLocalTransition,pivotChords,transitionTech,
+  suggestSetlist,suggestLeader,buildUsageHistory,toneDistance,normTone
+};
+</script>
+
+
+<script>
+// ═══════════════════════════ CONFIG ═══════════════════════════
+let GEMINI_KEY = localStorage.getItem('tdf_gk')||'';
+const LDR_COLORS = ['#30dad8','#f4cd27','#ff004b','#8740bf','#4CAF50','#FF9800','#E91E63','#00BCD4'];
+
+// ═══════════════════════════ AUTH ═══════════════════════════
+// Two editor PINs (Dani + Jhonatan) — change these
+const EDITOR_PINS = ['tdf2025','worship'];
+let isEditor = false;
+
+function toggleAuth(){
+  if(isEditor){ logout(); return; }
+  document.getElementById('auth-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('auth-pin').focus(),100);
+}
+function submitAuth(){
+  const pin = document.getElementById('auth-pin').value.trim();
+  const err = document.getElementById('auth-error');
+  if(EDITOR_PINS.includes(pin)){
+    isEditor=true;
+    document.getElementById('auth-modal').classList.remove('open');
+    document.getElementById('auth-pin').value='';
+    document.getElementById('auth-av').textContent='✓';
+    document.getElementById('auth-name').textContent='Editor';
+    document.body.classList.add('is-editor');
+    document.body.classList.remove('viewer-mode');
+    err.style.display='none';
+    renderAll();
+  } else {
+    err.style.display='block';
+    document.getElementById('auth-pin').value='';
+  }
+}
+function closeAuth(){
+  document.getElementById('auth-modal').classList.remove('open');
+  document.getElementById('auth-pin').value='';
+  document.getElementById('auth-error').style.display='none';
+}
+function logout(){
+  isEditor=false;
+  document.getElementById('auth-av').textContent='?';
+  document.getElementById('auth-name').textContent='Ingresar';
+  document.body.classList.remove('is-editor');
+  document.body.classList.add('viewer-mode');
+  renderAll();
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeAuth(); closePanel(); }});
+window.addEventListener('DOMContentLoaded',()=>{
+  const k=document.getElementById('gemini-key');
+  if(k&&GEMINI_KEY) k.value=GEMINI_KEY;
+  document.body.classList.add('viewer-mode');
+  renderCronograma();
+});
+
+// ═══════════════════════════ CRONOGRAMA ═══════════════════════════
+const CRONOGRAMA = {
+  ensayo:[
+    {hora:'6:30 pm',act:'Llegada del equipo'},
+    {hora:'6:40 pm',act:'Devocional y oración'},
+    {hora:'7:00 pm',act:'Separación de voces + afinación'},
+    {hora:'7:30 pm',act:'Ensayo de transiciones y ensamble'},
+    {hora:'8:20 pm',act:'Oración final y cierre'},
+  ],
+  culto:[
+    {hora:'8:15 am',act:'Llegada equipo (límite 8:25 am)'},
+    {hora:'8:15 am',act:'Prueba sonido y secuencias'},
+    {hora:'8:40 am',act:'Oración con el equipo'},
+    {hora:'8:45 am',act:'Lectura bíblica'},
+    {hora:'9:00 am',act:'Inicio culto y alabanza'},
+    {hora:'9:50 am',act:'Prédica y enseñanza'},
+    {hora:'10:55 am',act:'Ministración final'},
+  ]
+};
+function renderCronograma(){
+  const fmt=r=>`<div class="crono-row"><span class="crono-hora">${r.hora}</span><span class="crono-act">${r.act}</span></div>`;
+  const ce=document.getElementById('crono-ensayo');
+  const cc=document.getElementById('crono-culto');
+  if(ce) ce.innerHTML=CRONOGRAMA.ensayo.map(fmt).join('');
+  if(cc) cc.innerHTML=CRONOGRAMA.culto.map(fmt).join('');
+}
+
+// ═══════════════════════════ DATA ═══════════════════════════
+const MESES=[
+  {id:'jun',label:'Jun 2025',full:'Junio 2025',fechas:['7 Jun','14 Jun','21 Jun','28 Jun'],cena:0},
+  {id:'jul',label:'Jul 2025',full:'Julio 2025',fechas:['6 Jul','13 Jul','20 Jul','27 Jul'],cena:3},
+  {id:'ago',label:'Ago 2025',full:'Agosto 2025',fechas:['3 Ago','10 Ago','17 Ago','24 Ago'],cena:0},
+  {id:'sep',label:'Sep 2025',full:'Septiembre 2025',fechas:['7 Sep','14 Sep','21 Sep','28 Sep'],cena:3},
+];
+let activeMes='jun';
+const mesObj=()=>MESES.find(m=>m.id===activeMes);
+
+let EQUIPO={
+  voces:[
+    {id:'v1',nombre:'David García',registro:'tenor',artistasAfines:['Elevation','Lakewood'],cancionesAfines:['Praise','Decimos Amén','Nada es Imposible','Hay Algo Nuevo','Todopoderoso','Vamos a Cantar'],roles:[{i:'Voz principal',n:'Experto'},{i:'Guitarra eléctrica',n:'Activo'}],disp:{jun:['1 Jun','8 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'v2',nombre:'Majito (María José)',registro:'soprano',artistasAfines:['Hillsong','Bethel'],cancionesAfines:['Buen Buen Padre','Ven y Lléname','Constante Amor','Amor Como Fuego','Como en el Cielo'],roles:[{i:'Voz principal',n:'Experto'}],disp:{jun:null,jul:null,ago:null,sep:null}},
+    {id:'v3',nombre:'Miguel Méndez',registro:'barítono',artistasAfines:['Marcos Witt','Marco Barrientos'],cancionesAfines:['Glorioso','Único Dios','Solo Hay Uno','Yo Te Amo','Eres Fiel'],roles:[{i:'Voz',n:'Activo'},{i:'Bajo',n:'Activo'}],disp:{jun:['1 Jun','15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta un Corazón','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['8 Jun','15 Jun'],jul:null,ago:null,sep:null}},
+  ],
+  musicos:[
+    {id:'v6',nombre:'Alejandro Lizarazo',registro:'',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
+  {id:'v5',nombre:'Camilo Puentes',registro:'tenor',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:['7 Jun'],jul:null,ago:null,sep:null}},
+  {id:'m1',nombre:'Daniel García',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Experto'}],disp:{jun:['1 Jun','8 Jun','15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m2',nombre:'Jason',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Activo'}],disp:{jun:['8 Jun','15 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m3',nombre:'Johan Sebastián',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Guitarra',n:'Activo'},{i:'Piano / Teclado',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
+    {id:'m4',nombre:'David Méndez',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Bajo',n:'Activo'}],disp:{jun:['1 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m5',nombre:'Carolina',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'}],disp:{jun:['1 Jun','8 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m6',nombre:'Ruth',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'}],disp:{jun:['15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m7',nombre:'Jhonatan Pardo',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'},{i:'Guitarra',n:'Experto'}],disp:{jun:['1 Jun','8 Jun','15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+  ]
+};
+
+let CANCIONES=[
+  {id:'c01',nombre:'Praise',artista:'Elevation Worship',tono:'D',bpm:130,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Alabanza / Celebración',nuevo:false,recursos:{multitrack:true,secuencia:true,pads:false,click:true},version:'https://www.youtube.com/results?search_query=Praise+Elevation+Worship+español',partitura:'',secuencias:''},
+  {id:'c02',nombre:'Constante Amor',artista:'',tono:'A',bpm:76,energia:'Baja',clasificacion:'Rápida',dificultad:'Fácil',tema:'Amor y Fidelidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1aUwdl-4q9R3_L-DDglDvrrIRxCtoB43r/view',secuencias:''},
+  {id:'c03',nombre:'Agnus Dei',artista:'Michael W Smith',tono:'E',bpm:68,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Adoración / Santidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'https://drive.google.com/file/d/1VMzZa1Uw0F0ciJBUckWNQWNd1bZrltgo/view',secuencias:''},
+  {id:'c04',nombre:'Jesucristo Basta un Corazón',artista:'Un Corazón',tono:'Ab',bpm:82,energia:'Media',clasificacion:'Lenta',dificultad:'Fácil',tema:'Suficiencia de Cristo',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1bFOi3KYskUwjzGt7WNClKcqU2b3QNmCe/view',secuencias:''},
+  {id:'c05',nombre:'Decimos Amén',artista:'Lakewood Music',tono:'Bb',bpm:124,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Acuerdo / Fe',nuevo:false,recursos:{multitrack:true,secuencia:true,pads:false,click:true},version:'',partitura:'',secuencias:''},
+  {id:'c06',nombre:'Eres Fiel',artista:'Israel Houghton',tono:'D',bpm:86,energia:'Media',clasificacion:'Rápida',dificultad:'Media',tema:'Fidelidad y Confianza',nuevo:false,recursos:{multitrack:true,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1y2u0ZBfLVDSpmSf-RgIJ7NtKqcXcywg-/view',secuencias:''},
+  {id:'c07',nombre:'Amor Como Fuego',artista:'BJ Putnam',tono:'B',bpm:78,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Amor de Dios / Rendición',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'https://drive.google.com/file/d/1PUSR_kQW1sKkPgyNqZmUf9cOCMuT8IyZ/view',secuencias:''},
+  {id:'c08',nombre:'Sublime Gracia',artista:'Blest',tono:'F',bpm:65,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Gracia y Salvación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'https://drive.google.com/file/d/1d-QH-FTe8M1rc0YpHbtW3vCY-MuXMYQ4/view',secuencias:''},
+  {id:'c09',nombre:'Todopoderoso',artista:'Lakewood Music',tono:'E',bpm:128,energia:'Alta',clasificacion:'Rápida',dificultad:'Difícil',tema:'Poder / Victoria',nuevo:false,recursos:{multitrack:true,secuencia:true,pads:false,click:true},version:'',partitura:'',secuencias:''},
+  {id:'c10',nombre:'Ven y Lléname',artista:'',tono:'D',bpm:74,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Presencia del Espíritu',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'',secuencias:''},
+  {id:'c11',nombre:'Único Dios',artista:'Marcos Barrientos',tono:'A',bpm:88,energia:'Media',clasificacion:'Rápida',dificultad:'Media',tema:'Exaltación y Unicidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1pnA8O2MhrMk7GjmSP4_Ag3BT4a-_GU4S/view',secuencias:''},
+  {id:'c12',nombre:'Nada es Imposible',artista:'Marcos Barrientos',tono:'A',bpm:134,energia:'Alta',clasificacion:'Rápida',dificultad:'Difícil',tema:'Fe / Poder / Omnipotencia',nuevo:false,recursos:{multitrack:true,secuencia:true,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1Tv0oqGFLYcNvLO_soVm5wlSpjg9XFP5y/view',secuencias:''},
+  {id:'c13',nombre:'Siempre que me Mires',artista:'',tono:'F',bpm:78,energia:'Media',clasificacion:'Media',dificultad:'Fácil',tema:'Amor de Dios / Identidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
+  {id:'c14',nombre:'Buen Buen Padre',artista:'Chris Tomlin',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Paternidad de Dios',nuevo:false,recursos:{multitrack:true,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1DV1m3BHZ4tOz4O9wJ8jAOe3muc8TSClb/view',secuencias:''},
+  {id:'c15',nombre:'Vamos a Cantar',artista:'',tono:'D',bpm:118,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Celebración y Alegría',nuevo:false,recursos:{multitrack:false,secuencia:true,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1xXj-KmNKYtxe8xLYn5VDJFdkQQDfqQ6L/view',secuencias:''},
+  {id:'c16',nombre:'Todo lo Haces Bien',artista:'Gateway Worship',tono:'G',bpm:80,energia:'Media',clasificacion:'Rápida',dificultad:'Fácil',tema:'Providencia y Bondad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1x-Oie5XvoQM04X8J-rQzpaSXLIEXj1Ta/view',secuencias:''},
+  {id:'c17',nombre:'Glorioso',artista:'BJ Putnam',tono:'A',bpm:76,energia:'Media',clasificacion:'Rápida',dificultad:'Media',tema:'Gloria de Dios / Exaltación',nuevo:false,recursos:{multitrack:true,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1OjgOiwRu0QYPj__Cr6KbLLVgNp1fy18t/view',secuencias:''},
+  {id:'c18',nombre:'Yo Te Amo',artista:'',tono:'C',bpm:84,energia:'Media',clasificacion:'Media',dificultad:'Fácil',tema:'Amor a Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'',secuencias:''},
+  {id:'c19',nombre:'Solo Hay Uno',artista:'Miel San Marcos',tono:'Db',bpm:92,energia:'Media',clasificacion:'Rápida',dificultad:'Media',tema:'Unicidad de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1SREy8VW5pu7jpozGatqDF1YVOk55zv9a/view',secuencias:''},
+  {id:'c20',nombre:'Gracia Sublime',artista:'Phil Wickham',tono:'Ab',bpm:72,energia:'Baja',clasificacion:'Rápida',dificultad:'Fácil',tema:'Gracia y Salvación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'https://drive.google.com/file/d/1mIEDKy5SzbMgLNrM9ya3wq4n9teWCjDp/view',secuencias:''},
+  {id:'c21',nombre:'Hay Algo Nuevo',artista:'Elevation Worship',tono:'C',bpm:115,energia:'Alta',clasificacion:'Rápida',dificultad:'Difícil',tema:'Renovación / Obra de Dios',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:false},version:'https://www.youtube.com/results?search_query=Hay+algo+nuevo+Elevation+Worship+español',partitura:'',secuencias:''},
+  {id:'c23',nombre:'Que se Llene Tu Casa',artista:'Ingrid Rosario',tono:'Eb',bpm:132,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Presencia de Dios / Invocación',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:false},version:'https://www.youtube.com/results?search_query=Que+se+llene+tu+casa+Elevation+Worship+español',partitura:'',secuencias:''},
+  {id:'c24',nombre:'Lo Único que Quiero',artista:'Marcela Gandara',tono:'F#',bpm:72,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Rendición y Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'',secuencias:''},
+  {id:'c25',nombre:'Dios Ha Sido Bueno',artista:'Marcos Witt',tono:'F',bpm:75,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Fidelidad y Bondad de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'https://drive.google.com/file/d/1UEiRiK9_AU1QkQwe5mqkyXMhGLhtFhvz/view',secuencias:''},
+  {id:'c22',nombre:'Como en el Cielo',artista:'Elevation Worship',tono:'G',bpm:88,energia:'Media',clasificacion:'Media',dificultad:'Difícil',tema:'Reino de Dios / Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:false},version:'https://www.youtube.com/results?search_query=Como+en+el+cielo+Elevation+Worship+español',partitura:'',secuencias:''},
+];
+
+let DOMINGOS={
+  jun:[
+    {id:'j1',fecha:'7 Jun 2025',tipo:'Cena',tema:'La Mesa del Señor',lectura:'1 Corintios 11:23–26',horario:{servicio:'9:00 am',llegada:'8:00 am'},outfit:{color:'#132589',nombre:''},flujo:['Adoración','Reverencia','Comunión'],banda:[{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🥁',nombre:'Dani García',rol:'Batería'},{icon:'🎸',nombre:'Secuencia',rol:'Bajo'}],canciones:[{nombre:'Que se Llene Tu Casa',nota:'Rápida',energia:'Alta',planb:'',lider:'Majito',vozLider:false},{nombre:'Solo Hay Uno',nota:'Intermedia',energia:'Media',planb:'',lider:'David García',vozLider:false},{nombre:'Ven y Lléname',nota:'Ministración',energia:'Baja',planb:'',lider:'Majito',vozLider:false},{nombre:'Lo Único que Quiero',nota:'Ofrenda',energia:'Baja',planb:'',lider:'',vozLider:false},{nombre:'Dios Ha Sido Bueno',nota:'Cena',energia:'Baja',planb:'',lider:'',vozLider:false}],voces:[{nombre:'Majito (María José)',rol:'Voz Líder',dirige:true},{nombre:'David García',rol:'Voz',dirige:false},{nombre:'Camilo',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:88},
+    {id:'j2',fecha:'14 Jun 2025',tipo:'Normal',tema:'Fe que Mueve Montañas',lectura:'Marcos 11:22–24',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#8740bf',nombre:'Morado'},flujo:['Celebración','Gratitud','Fe'],banda:[{icon:'🥁',nombre:'Jason',rol:'Batería'},{icon:'🎹',nombre:'Carolina',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🎤',nombre:'David García',rol:'Voz'},{icon:'🎤',nombre:'Juan David Moreno',rol:'Voz / Guitarra'}],canciones:[{nombre:'Nada es Imposible',nota:'Rápida',energia:'Alta',planb:'Todopoderoso',lider:'David García'},{nombre:'Eres Fiel',nota:'Intermedia',energia:'Media',planb:'Único Dios',lider:'Juan Moreno'},{nombre:'Buen Buen Padre',nota:'Ministración',energia:'Baja',planb:'Amor Como Fuego',lider:'Juan Moreno'},{nombre:'Todo lo Haces Bien',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],voces:[{nombre:'David García',rol:'Voz Líder',dirige:true},{nombre:'Juan David Moreno',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:80,
+    {id:'j3',fecha:'21 Jun 2025',tipo:'Normal',tema:'Rendición Total',lectura:'Romanos 12:1–2',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#30dad8',nombre:'Turquesa'},flujo:['Celebración','Adoración','Rendición'],banda:[{icon:'🥁',nombre:'Jason',rol:'Batería'},{icon:'🎸',nombre:'Miguel Méndez',rol:'Bajo'},{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🎤',nombre:'Miguel Méndez',rol:'Voz'},{icon:'🎤',nombre:'Juan David Moreno',rol:'Voz'}],canciones:[{nombre:'Decimos Amén',nota:'Rápida',energia:'Alta',planb:'Praise',lider:'David García'},{nombre:'Único Dios',nota:'Intermedia',energia:'Media',planb:'Solo Hay Uno',lider:'Miguel Méndez'},{nombre:'Amor Como Fuego',nota:'Ministración',energia:'Baja',planb:'Siempre que me Mires',lider:'Juan Moreno'},{nombre:'Siempre que me Mires',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],voces:[{nombre:'Juan David Moreno',rol:'Voz Líder',dirige:true},{nombre:'Miguel Méndez',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:77,
+    {id:'j4',fecha:'28 Jun 2025',tipo:'Normal',tema:'El Gozo del Señor es mi Fuerza',lectura:'Nehemías 8:10',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#f4cd27',nombre:'Amarillo dorado'},flujo:['Gozo','Gratitud','Adoración'],banda:[{icon:'🥁',nombre:'Daniel García',rol:'Batería'},{icon:'🎸',nombre:'David Méndez',rol:'Bajo'},{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'David García',rol:'Guitarra'},{icon:'🎤',nombre:'David García',rol:'Voz'},{icon:'🎤',nombre:'Miguel Méndez',rol:'Voz'}],canciones:[{nombre:'Vamos a Cantar',nota:'Rápida',energia:'Alta',planb:'Nada es Imposible',lider:'David García'},{nombre:'Todopoderoso',nota:'Intermedia',energia:'Alta',planb:'Praise',lider:'David García'},{nombre:'Yo Te Amo',nota:'Ministración',energia:'Media',planb:'Buen Buen Padre',lider:'Miguel Méndez'},{nombre:'Solo Hay Uno',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],voces:[{nombre:'David García',rol:'Voz Líder',dirige:true},{nombre:'Miguel Méndez',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:83,
+  ],
+  jul:[null,null,null,null],
+  ago:[null,null,null,null],
+  sep:[null,null,null,null],
+};
+
+let ENSAYOS=[
+  {id:'e1',fecha:'Sáb 7 Jun',titulo:'Ensayo general — Junio',notas:'Primera lectura de Hay Algo Nuevo sin presión.',songs_nuevas:['Hay Algo Nuevo'],songs_refuerzo:['Glorioso','Amor Como Fuego','Nada es Imposible'],transiciones:{}},
+  {id:'e2',fecha:'Sáb 14 Jun',titulo:'Ensayo general — Junio (2)',notas:'Consolidar Hay Algo Nuevo. Intro de Como en el Cielo solo guitarras y voces.',songs_nuevas:['Como en el Cielo'],songs_refuerzo:['Hay Algo Nuevo','Decimos Amén','Vamos a Cantar'],transiciones:{}},
+  {id:'e3',fecha:'Sáb 5 Jul',titulo:'Ensayo general — Julio',notas:'Como en el Cielo con banda completa. Objetivo: lista para julio.',songs_nuevas:[],songs_refuerzo:['Como en el Cielo','Praise','Único Dios','Eres Fiel'],transiciones:{}},
+];
+const RUTA_NUEVAS=[
+  {cancion:'Hay Algo Nuevo',fase:'Nueva',desc:'Lectura Jun 7 · Banda Jun 14 · Activa Jul',dot:'rd-n',ph:'rp-n'},
+  {cancion:'Como en el Cielo',fase:'Nueva',desc:'Guitarras Jun 14 · Banda Jul 5 · Activa Ago',dot:'rd-n',ph:'rp-n'},
+  {cancion:'(Por definir)',fase:'Introducción',desc:'Candidata Agosto',dot:'rd-i',ph:'rp-i'},
+  {cancion:'(Por definir)',fase:'Activa Sep',desc:'Consolidar Septiembre',dot:'rd-a',ph:'rp-a'},
+];
+
+// ═══════════════════════════ HELPERS ═══════════════════════════
+const contrast=h=>{const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return(r*299+g*587+b*114)/1000>128?'#000':'#fff';};
+const lpC=n=>n==='Experto'?'lp-e':n==='Activo'?'lp-a':'lp-f';
+const allNames=()=>[...EQUIPO.voces,...EQUIPO.musicos].map(m=>m.nombre);
+const voceNames=()=>EQUIPO.voces.map(m=>m.nombre);
+const songData=n=>CANCIONES.find(c=>c.nombre===n);
+const mesObj=()=>MESES.find(m=>m.id===activeMes);
+let activeMes='jun';
+
+function ldrColor(name){
+  const all=[...EQUIPO.voces,...EQUIPO.musicos];
+  const idx=all.findIndex(m=>m.nombre===name);
+  return idx>=0?LDR_COLORS[idx%LDR_COLORS.length]:'transparent';
+}
+function vocesDisponibles(fechaCorta){
+  return EQUIPO.voces.filter(v=>{
+    const d=v.disp[activeMes];
+    if(d===null) return true;
+    return d.includes(fechaCorta);
+  });
+}
+
+// ═══════════════════════════ EXPORT WHATSAPP ═══════════════════════════
+function exportDomingo(mesId, idx){
+  const mes=MESES.find(m=>m.id===mesId);
+  const d=DOMINGOS[mesId][idx];
+  if(!d) return;
+  const lines=[];
+  lines.push(`🎵 *TDF WORSHIP*`);
+  lines.push(`📅 *${d.fecha}* — ${d.tipo==='Cena'?'✦ Cena del Señor':'Servicio'}`);
+  if(d.horario) lines.push(`⏰ Servicio: ${d.horario.servicio} | Llegada: ${d.horario.llegada}`);
+  lines.push('');
+  lines.push(`📖 *${d.tema}*`);
+  lines.push(`"${d.lectura}"`);
+  lines.push('');
+  // Voz Líder
+  const vl=d.voces?.find(v=>v.dirige&&v.nombre);
+  if(vl) lines.push(`⭐ *VOZ LÍDER (dirige el culto):* ${vl.nombre}`);
+  const otrasVoces=d.voces?.filter(v=>!v.dirige&&v.nombre)||[];
+  if(otrasVoces.length) lines.push(`🎤 Voces: ${otrasVoces.map(v=>v.nombre).join(', ')}`);
+  lines.push('');
+  // Banda
+  lines.push(`🎸 *Banda:*`);
+  d.banda.forEach(b=>lines.push(`  ${b.icon} ${b.rol}: ${b.nombre}`));
+  lines.push('');
+  // Setlist
+  lines.push(`🎶 *Canciones:*`);
+  d.canciones.forEach((c,i)=>{
+    const ldr=c.lider?` _(${c.lider})_`:'';
+    const pb=c.planb?` / B: ${c.planb}`:'';
+    lines.push(`  ${i+1}. ${c.nombre} [${c.nota}]${ldr}${pb}`);
+  });
+  // Outfit
+  if(d.outfit?.nombre) lines.push('');lines.push(`👕 Color: ${d.outfit?.nombre||'—'}`);
+  lines.push('');
+  lines.push(`_Generado desde TDF Worship Planificador_`);
+  const text=lines.join('\n');
+  document.getElementById('export-text').textContent=text;
+  document.getElementById('export-modal').classList.add('open');
+}
+function copyExport(){
+  const t=document.getElementById('export-text').textContent;
+  navigator.clipboard.writeText(t).then(()=>{
+    const btn=document.querySelector('.export-copy');
+    btn.textContent='✓ Copiado!';
+    setTimeout(()=>btn.textContent='📋 Copiar',2000);
+  }).catch(()=>{
+    // Fallback
+    const ta=document.createElement('textarea');
+    ta.value=t;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
+
+// ═══════════════════════════ RENDER MES ═══════════════════════════
+function renderMonthNav(){
+  document.getElementById('month-nav').innerHTML=MESES.map(m=>
+    `<button class="month-btn ${m.id===activeMes?'active':''}" onclick="setMes('${m.id}')">${m.label}</button>`
+  ).join('');
+}
+function setMes(id){
+  activeMes=id;
+  renderMonthNav();
+  renderDomingos();
+  const m=mesObj();
+  document.getElementById('h-title').textContent=m.full;
+  const cnt=DOMINGOS[id].filter(Boolean).length;
+  document.getElementById('stat-d').textContent=cnt;
+  document.getElementById('h-sub').textContent=`${cnt} servicios planificados · ${4-cnt} por configurar`;
+}
+
+function buildLocalTransitions(canciones){
+  const trans={};
+  for(let i=0;i<canciones.length-1;i++){
+    const a=songData(canciones[i].nombre||canciones[i]);
+    const b=songData(canciones[i+1].nombre||canciones[i+1]);
+    if(a&&b){
+      const key=`${a.nombre}__${b.nombre}`;
+      trans[key]=MUSIC_ENGINE.buildLocalTransition(a,b);
+    }
+  }
+  return trans;
+}
+
+function renderDomingos(){
+  const mes=mesObj();
+  document.getElementById('dom-grid').innerHTML=DOMINGOS[activeMes].map((d,i)=>{
+    const fecha=mes.fechas[i];
+    const esCena=mes.cena===i;
+    if(!d) return `<div class="dom-card empty">
+      <div class="card-accent acc-e"></div>
+      <div class="card-head"><span class="card-fecha">${fecha}</span><span class="badge badge-n">${esCena?'✦ Cena':'Servicio'}</span></div>
+      <div class="empty-body"><p>Sin planificar</p>
+        ${isEditor?`<button class="empty-add" onclick="openNuevoDomingo('${activeMes}',${i},'${fecha}',${esCena})">+ Configurar</button>`:'<p style="font-size:.6rem;color:var(--text4)">Pendiente</p>'}
+      </div></div>`;
+
+    const localTrans=buildLocalTransitions(d.canciones);
+    const flujoH=d.flujo.map((f,j)=>`<span class="fstep">${f}</span>${j<d.flujo.length-1?'<span class="farr">→</span>':''}`).join('');
+
+    // Band rows
+    const bandaH=d.banda.map(b=>`<div class="band-row">
+      <span class="b-ico">${b.icon}</span>
+      <span class="b-name">${b.nombre==='Secuencia'?'<em style="color:var(--text3)">Secuencia</em>':b.nombre}</span>
+      <span class="b-rol">${b.rol}</span>
+    </div>`).join('');
+
+    // Voces rows — voz líder destacada
+    let vocesH='';
+    if(d.voces){
+      vocesH=d.voces.map(v=>{
+        if(v.dirige&&v.nombre) return `<div class="voz-lider-row"><span class="b-ico">⭐</span><span class="voz-lider-name">${v.nombre}</span><span class="voz-lider-tag">VOZ LÍDER</span></div>`;
+        if(v.nombre) return `<div class="band-row"><span class="b-ico">🎤</span><span class="b-name">${v.nombre}</span><span class="b-rol">${v.rol||'Voz'}</span></div>`;
+        return `<div class="band-row voz-empty"><span class="b-ico">🎤</span><span class="b-name">—</span><span class="b-rol">Voz</span></div>`;
+      }).join('');
+    }
+
+    // Legend de líderes únicos
+    const ldrs=[...new Set(d.canciones.map(c=>c.lider).filter(Boolean))];
+    const legendH=ldrs.map(l=>`<span class="sl-leg-item"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${ldrColor(l)}"></span>${l.split(' ')[0]}</span>`).join('');
+
+    // Setlist
+    const slH=d.canciones.map((c,j)=>{
+      const col=c.lider?ldrColor(c.lider):'transparent';
+      const hasBorder=!c.lider?';border:1px solid var(--border)':'';
+      const nextC=d.canciones[j+1];
+      const trans=nextC?localTrans[`${c.nombre}__${nextC.nombre}`]:null;
+      const transMini=trans?`<div class="trans-mini">
+        <span class="trans-chords">${trans.acordes}</span>
+        <span class="trans-pill">${trans.distancia===0?'↔ mismo':trans.distancia<=2?'↕ cercano':'⇕ módulo'}</span>
+      </div>`:'';
+      return `<div class="sl-item">
+        <span class="sl-num">${j+1}</span>
+        <span class="sl-ldr-dot" style="background:${col}${hasBorder}" title="${c.lider?'Líder: '+c.lider:''}"></span>
+        <span class="sl-name">${c.nombre}</span>
+        <span class="sl-nota">${c.nota}</span>
+        ${c.planb?`<span class="sl-planb">/ ${c.planb}</span>`:''}
+        <span class="e-dot ${c.energia==='Alta'?'ea':c.energia==='Media'?'em':'eb'}"></span>
+      </div>${transMini}`;
+    }).join('');
+
+    const oc=d.outfit?.color||'#132589',on=d.outfit?.nombre||'';
+    return `<div class="dom-card">
+      <div class="card-accent ${d.tipo==='Cena'?'acc-c':'acc-n'}"></div>
+      <div class="card-head">
+        <span class="card-fecha">${d.fecha}</span>
+        <div class="card-badges">
+          <span class="badge ${d.tipo==='Cena'?'badge-c':'badge-n'}">${d.tipo==='Cena'?'✦ Cena':'Servicio'}</span>
+          ${on?`<span class="badge badge-out" style="background:${oc};color:${contrast(oc)}">${on}</span>`:''}
+        </div>
+      </div>
+      <div class="card-body">
+        ${d.horario?`<div class="card-horario"><span class="hora-chip">⏰ ${d.horario.servicio}</span><span class="llegada-txt">Llegada ${d.horario.llegada}</span></div>`:''}
+        <div class="card-tema">${d.tema}</div>
+        <div class="card-lect">📖 ${d.lectura}</div>
+        <div class="flujo">${flujoH}</div>
+        <div class="band-section">
+          <div class="band-sec-label">Banda</div>
+          ${bandaH}
+          ${d.voces?`<div style="margin-top:4px">${vocesH}</div>`:''}
+        </div>
+        <div class="setlist-wrap">
+          <div class="sl-lbl">Setlist <div class="sl-legend">${legendH}</div></div>
+          ${slH}
+        </div>
+        <div class="card-footer">
+          <div class="score-w"><span class="sc-lbl">Cohesión</span><div class="sc-bar"><div class="sc-fill" style="width:${d.score}%"></div></div><span class="sc-num">${d.score}</span></div>
+          <div class="card-btns">
+            ${isEditor?`<button class="edit-btn" onclick="openDomingo('${activeMes}',${i})">✏</button>`:''}
+            <button class="export-btn" onclick="exportDomingo('${activeMes}',${i})">📤</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════ RENDER ENSAYOS ═══════════════════════════
+function renderEnsayos(){
+  document.getElementById('ens-list').innerHTML=ENSAYOS.map(e=>{
+    const allSongs=[
+      ...e.songs_refuerzo.map(n=>({n,nueva:false})),
+      ...e.songs_nuevas.map(n=>({n,nueva:true}))
+    ];
+    const trans=e.transiciones||{};
+
+    const songsH=allSongs.map((s,i)=>{
+      const cd=songData(s.n);
+      const clsCls=cd?(cd.clasificacion==='Rápida'?'esi-r':cd.clasificacion==='Lenta'?'esi-l':'esi-m'):'esi-m';
+      const nextS=allSongs[i+1];
+      const nextCd=nextS?songData(nextS.n):null;
+      const localT=(cd&&nextCd)?MUSIC_ENGINE.buildLocalTransition(cd,nextCd):null;
+      const savedT=nextS?trans[s.n+'__'+nextS.n]:null;
+      const displayT=savedT||localT;
+
+      // Links — visible para todos
+      const links=[];
+      if(cd?.version) links.push(`<a href="${cd.version}" target="_blank" class="esi-link esi-link-yt">▶ Ver</a>`);
+      if(cd?.partitura) links.push(`<a href="${cd.partitura}" target="_blank" class="esi-link esi-link-pdf">♩ PDF</a>`);
+      if(cd?.secuencias) links.push(`<a href="${cd.secuencias}" target="_blank" class="esi-link esi-link-seq">🎵 Seq</a>`);
+
+      const transBlock=nextS&&displayT?`<div class="trans-block">
+        <div class="tb-head">
+          <span class="tb-title">↕ Transición</span>
+          <div class="tb-tags">
+            <span class="tb-tag tono">${displayT.acordes}</span>
+            <span class="tb-tag ritmo">${displayT.tempo}</span>
+          </div>
+        </div>
+        <div class="tb-acordes">${displayT.acordes}</div>
+        <div class="tb-tecnica">${displayT.tecnica}</div>
+        ${displayT.palabras?`<div class="tb-palabras">"${displayT.palabras}"</div>`:''}
+        ${isEditor?`<div class="tb-btns">
+          <button class="tb-btn tb-edit" onclick="editTransicion('${e.id}','${s.n}','${nextS.n}')">✏ Editar</button>
+          ${GEMINI_KEY?`<button class="tb-btn tb-gemini" onclick="enrichTransicion('${e.id}','${s.n}','${nextS.n}')">✨ Gemini</button>`:''}
+        </div>`:''}
+      </div>`:'';
+
+      return `<div class="ens-song">
+        <div class="esi-top">
+          <span class="esi-num">${i+1}</span>
+          <span class="esi-name" style="${s.nueva?'font-weight:700':''}">${s.n}</span>
+          ${cd?`<span class="esi-tono">${cd.tono}</span><span class="esi-cls ${clsCls}">${cd.clasificacion}</span>`:''}
+          ${s.nueva?`<span class="esi-nueva">★ Nueva</span>`:''}
+          <span class="esi-links">${links.join('')}</span>
+        </div>
+      </div>${transBlock}`;
+    }).join('');
+
+    return `<div class="ec">
+      <div class="ec-head">
+        <div><div class="ec-fecha">${e.fecha}</div><div class="ec-titulo">${e.titulo}</div></div>
+        ${isEditor?`<div class="ec-acts">
+          <button class="ec-btn" onclick="openEnsayo('${e.id}')">✏</button>
+          <button class="ec-del" onclick="if(confirm('¿Eliminar?')){ENSAYOS=ENSAYOS.filter(x=>x.id!=='${e.id}');renderEnsayos()}">✕</button>
+        </div>`:''}
+      </div>
+      <div class="ec-body">
+        <div><div class="ec-lbl">Estructura musical</div><div style="display:flex;flex-direction:column;gap:2px">${songsH}</div></div>
+        ${e.notas?`<div style="font-size:.66rem;color:var(--text2);line-height:1.4;padding:6px 8px;background:var(--bg2);border-radius:5px;border-left:2px solid var(--purple)">${e.notas}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ruta-body').innerHTML=RUTA_NUEVAS.map(r=>`
+    <div class="ruta-item">
+      <div class="rd ${r.dot}">${r.fase==='Nueva'?'★':r.fase==='Introducción'?'◎':'✓'}</div>
+      <div><div class="ruta-song">${r.cancion}</div><div class="ruta-desc">${r.desc}</div><span class="ruta-ph ${r.ph}">${r.fase}</span></div>
+    </div>`).join('');
+}
+
+// Gemini enrich transition
+async function enrichTransicion(ensId,songA,songB){
+  if(!GEMINI_KEY){alert('Ingresa tu Gemini API Key.');return;}
+  const cdA=songData(songA),cdB=songData(songB);
+  const local=cdA&&cdB?MUSIC_ENGINE.buildLocalTransition(cdA,cdB):{acordes:'',tecnica:''};
+  const prompt=`Eres director musical de alabanza cristiana. Sugiere la transición musical entre:\nA: "${songA}" — Tono:${cdA?.tono}, BPM:${cdA?.bpm}, Energía:${cdA?.energia}, Tema:${cdA?.tema}\nB: "${songB}" — Tono:${cdB?.tono}, BPM:${cdB?.bpm}, Energía:${cdB?.energia}, Tema:${cdB?.tema}\nSecuencia base: ${local.acordes}\nTécnica base: ${local.tecnica}\nDevuelve SOLO JSON: {"acordes":"...","tecnica":"...","palabras":"..."} Sin markdown.`;
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:.7,maxOutputTokens:500}})});
+    const data=await res.json();
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'{}';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    const e=ENSAYOS.find(x=>x.id===ensId);
+    if(!e.transiciones) e.transiciones={};
+    e.transiciones[songA+'__'+songB]={...local,...parsed};
+    renderEnsayos();
+  }catch(err){alert('Error Gemini: '+err.message);}
+}
+function editTransicion(ensId,songA,songB){
+  _mode='trans';
+  const e=ENSAYOS.find(x=>x.id===ensId);
+  const trans=(e.transiciones||{})[songA+'__'+songB]||{};
+  const cdA=songData(songA),cdB=songData(songB);
+  const local=cdA&&cdB?MUSIC_ENGINE.buildLocalTransition(cdA,cdB):{acordes:'',tecnica:'',tempo:'',palabras:''};
+  const cur={...local,...trans};
+  openPanel(`Transición`,`${songA} → ${songB}`,`
+    <div class="ps"><div class="ps-t">Secuencia de acordes puente</div>
+      <div class="fr"><label class="fl">Acordes (editable — calculado automáticamente)</label><input class="fi" id="tr-acordes" value="${cur.acordes}"></div>
+      <p style="font-size:.58rem;color:var(--text3);margin-top:-5px;margin-bottom:8px">Formato: C → Am → F · o notación Nashville · o cifrado numérico</p>
+    </div>
+    <div class="ps"><div class="ps-t">Técnica de transición</div>
+      <div class="fr"><textarea class="fta" id="tr-tecnica">${cur.tecnica}</textarea></div>
+    </div>
+    <div class="ps"><div class="ps-t">Tempo</div>
+      <div class="fr"><input class="fi" id="tr-tempo" value="${cur.tempo}"></div>
+    </div>
+    <div class="ps"><div class="ps-t">Palabras de conexión espiritual</div>
+      <div class="fr"><textarea class="fta" id="tr-palabras" placeholder="Frase breve para conectar los temas...">${cur.palabras||''}</textarea></div>
+      ${GEMINI_KEY?`<button onclick="enrichTransicion('${ensId}','${songA}','${songB}');closePanel()" style="font-size:.62rem;font-weight:700;background:linear-gradient(90deg,var(--navy),var(--purple));border:none;color:#fff;padding:5px 11px;border-radius:6px;margin-top:5px">✨ Enriquecer con Gemini</button>`:''}
+    </div>
+    <input type="hidden" id="tr-key" value="${songA}__${songB}">
+    <input type="hidden" id="tr-ensid" value="${ensId}">
+  `);
+}
+function saveTransicion(){
+  const key=document.getElementById('tr-key').value;
+  const ensId=document.getElementById('tr-ensid').value;
+  const e=ENSAYOS.find(x=>x.id===ensId);
+  if(!e.transiciones) e.transiciones={};
+  e.transiciones[key]={
+    acordes:document.getElementById('tr-acordes').value,
+    tecnica:document.getElementById('tr-tecnica').value,
+    tempo:document.getElementById('tr-tempo').value,
+    palabras:document.getElementById('tr-palabras').value,
+  };
+  closePanel();renderEnsayos();
+}
+
+// ═══════════════════════════ RENDER EQUIPO ═══════════════════════════
+function saveDispInline(mId,fecha,on){
+  const all=[...EQUIPO.voces,...EQUIPO.musicos];
+  const m=all.find(x=>x.id===mId);if(!m)return;
+  if(!m.disp[activeMes]) m.disp[activeMes]=[];
+  if(on){if(!m.disp[activeMes].includes(fecha)) m.disp[activeMes].push(fecha);}
+  else{m.disp[activeMes]=m.disp[activeMes].filter(f=>f!==fecha);}
+}
+function renderEquipo(){
+  const fechasMes=mesObj()?.fechas||[];
+  const mk=(m,i)=>{
+    const init=m.nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const rolesH=m.roles.map(r=>`<div class="eq-role"><span class="eq-role-n">${r.i}</span><span class="lp ${lpC(r.n)}">${r.n}</span></div>`).join('');
+    const dispMes=m.disp[activeMes];
+    // Inline disp toggles — EVERYONE can toggle their own availability
+    const chipsH=fechasMes.map(f=>{
+      const isOn=dispMes&&dispMes.includes(f);
+      const isPend=!dispMes;
+      return `<button class="dtog ${isOn?'on':isPend?'pend':''}" onclick="this.classList.toggle('on');saveDispInline('${m.id}','${f}',this.classList.contains('on'))">${f}</button>`;
+    }).join('');
+    const afinH=(m.cancionesAfines?.length)?`<div class="eq-afines">${m.cancionesAfines.slice(0,4).map(n=>`<span class="afin-chip">${n}</span>`).join('')}${m.cancionesAfines.length>4?`<span class="afin-chip">+${m.cancionesAfines.length-4}</span>`:''}</div>`:'';
+    return `<div class="eq-card" style="animation-delay:${i*.04}s">
+      <div class="eq-av">${init}</div>
+      <div class="eq-name">${m.nombre}</div>
+      <div class="eq-roles">${rolesH}</div>
+      ${afinH}
+      <div class="eq-disp"><div class="eq-disp-l">${mesObj()?.label||''}</div><div class="disp-chips">${chipsH}</div></div>
+      ${isEditor?`<div class="eq-footer"><button class="eq-edit-btn" onclick="openMiembro('${m.id}')">Editar perfil</button></div>`:''}
+    </div>`;
+  };
+  document.getElementById('g-voces').innerHTML=EQUIPO.voces.map((m,i)=>mk(m,i)).join('')+(isEditor?`<button class="eq-add" onclick="openNuevoMiembro('voces')"><span style="font-size:1.1rem;opacity:.3">+</span><span>Añadir voz</span></button>`:'');
+  document.getElementById('g-musicos').innerHTML=EQUIPO.musicos.map((m,i)=>mk(m,i)).join('')+(isEditor?`<button class="eq-add" onclick="openNuevoMiembro('musicos')"><span style="font-size:1.1rem;opacity:.3">+</span><span>Añadir músico</span></button>`:'');
+}
+
+// ═══════════════════════════ RENDER CANCIONES ═══════════════════════════
+function renderCanciones(){
+  document.getElementById('song-grid').innerHTML=CANCIONES.map((c,i)=>{
+    const eL=c.energia==='Alta'?3:c.energia==='Media'?2:1;
+    const eS=c.energia==='Alta'?'ea':c.energia==='Media'?'em':'eb';
+    const segs=[1,2,3].map(n=>`<span class="e-seg ${n<=eL?eS:''}"></span>`).join('');
+    const recs=['multitrack','secuencia','pads','click'].map(r=>`<span class="res ${c.recursos[r]?'on':''}">${r}</span>`).join('');
+    const diffC=c.dificultad==='Fácil'?'df':c.dificultad==='Difícil'?'dd':'dm';
+    // Links — always visible, these are the key feature for the team
+    const links=[];
+    if(c.version) links.push(`<a href="${c.version}" target="_blank" class="sl sl-yt">▶ Ver versión</a>`);
+    if(c.partitura) links.push(`<a href="${c.partitura}" target="_blank" class="sl sl-pt">♩ Partitura PDF</a>`);
+    if(c.secuencias) links.push(`<a href="${c.secuencias}" target="_blank" class="sl sl-sq">🎵 Secuencias.com</a>`);
+    return `<div class="song-card" style="animation-delay:${i*.018}s">
+      <div class="sc-head">
+        <div>
+          <div class="sc-name">${c.nombre}${c.nuevo?'<span class="new-b">Nueva</span>':''}<span class="diff-b ${diffC}">${c.dificultad}</span></div>
+          <div class="sc-artist">${c.artista||'—'}</div>
+        </div>
+        ${isEditor?`<span class="sc-tono" onclick="editTono('${c.id}')" id="tono-${c.id}" title="Click para editar tono">${c.tono}</span>`:`<span class="sc-tono" style="cursor:default">${c.tono}</span>`}
+      </div>
+      <div class="sc-body">
+        <div class="sc-meta-row">
+          <div><span class="sm-l">BPM</span>
+            ${isEditor?`<input class="sm-in" id="bpm-${c.id}" value="${c.bpm}" type="number" min="40" max="220" onchange="saveInline('${c.id}','bpm',this.value)">`:`<span style="font-size:.66rem;font-weight:600;color:var(--text2)">${c.bpm}</span>`}
+          </div>
+          <div><span class="sm-l">Energía</span>
+            ${isEditor?`<select class="sm-sel" onchange="saveInline('${c.id}','energia',this.value)">${['Alta','Media','Baja'].map(e=>`<option ${e===c.energia?'selected':''}>${e}</option>`).join('')}</select>`:`<span style="font-size:.64rem;color:var(--text2)">${c.energia}</span>`}
+          </div>
+          <div><span class="sm-l">Tipo</span>
+            ${isEditor?`<select class="sm-sel" onchange="saveInline('${c.id}','clasificacion',this.value)">${['Rápida','Media','Lenta'].map(e=>`<option ${e===c.clasificacion?'selected':''}>${e}</option>`).join('')}</select>`:`<span style="font-size:.64rem;color:var(--text2)">${c.clasificacion}</span>`}
+          </div>
+        </div>
+        <div class="sc-tema">${c.tema}</div>
+        <div class="sc-res">${recs}</div>
+        ${links.length?`<div class="sc-links">${links.join('')}</div>`:'<div style="font-size:.58rem;color:var(--text4);font-style:italic;margin-bottom:6px">Sin links aún</div>'}
+        ${isEditor?`<div class="sc-row-foot"><button class="sc-edit-btn" onclick="openSong('${c.id}')">✏ Editar</button><span class="sc-saved" id="saved-${c.id}">✓ Guardado</span></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveInline(id,field,val){
+  const c=CANCIONES.find(x=>x.id===id);if(!c)return;
+  c[field]=field==='bpm'?parseInt(val)||c.bpm:val;
+  const s=document.getElementById('saved-'+id);
+  if(s){s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1800);}
+}
+function editTono(id){
+  if(!isEditor) return;
+  const c=CANCIONES.find(x=>x.id===id);
+  const el=document.getElementById('tono-'+id);
+  el.innerHTML=`<input type="text" value="${c.tono}" style="width:32px;font-size:.6rem;font-weight:700;background:var(--bg2);color:var(--text);border:1.5px solid var(--purple);border-radius:3px;padding:1px 3px;text-align:center" onblur="finishTono('${id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" autofocus>`;
+  el.querySelector('input').focus();
+}
+function finishTono(id,val){const c=CANCIONES.find(x=>x.id===id);if(c)c.tono=val.trim()||c.tono;renderCanciones();}
+
+// ═══════════════════════════ PANEL SYSTEM ═══════════════════════════
+let _mode=null,_id=null,_mes=null,_idx=null,_grupo=null;
+let _bI=2000,_sI=3000,_rI=4000;
+function openPanel(t,s,body,saveL='Guardar'){
+  document.getElementById('ph-t').textContent=t;
+  document.getElementById('ph-s').textContent=s;
+  document.getElementById('pb').innerHTML=body;
+  document.getElementById('btn-s').textContent=saveL;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+  _mode=_id=_mes=_idx=_grupo=null;
+}
+function savePanel(){
+  if(_mode==='domingo') saveDomingo();
+  else if(_mode==='nuevo-domingo') saveNuevoDomingo();
+  else if(_mode==='miembro') saveMiembro();
+  else if(_mode==='nuevo-miembro') saveNuevoMiembro();
+  else if(_mode==='song') saveSong();
+  else if(_mode==='nueva-song') saveNuevaSong();
+  else if(_mode==='ensayo') saveEnsayo();
+  else if(_mode==='nuevo-ensayo') saveNuevoEnsayo();
+  else if(_mode==='trans') saveTransicion();
+}
+
+// ── VOCES PANEL BUILDER (no nested template literals) ──
+function buildVocesPanel(currentVoces){
+  const defaults=[
+    {nombre:'',rol:'Voz Líder',dirige:true},
+    {nombre:'',rol:'Voz',dirige:false},
+    {nombre:'',rol:'Voz',dirige:false},
+    {nombre:'',rol:'Voz',dirige:false},
+    {nombre:'',rol:'Voz',dirige:false},
+  ];
+  const vList=currentVoces||defaults;
+  const vN=voceNames();
+  let html='';
+  vList.forEach((v,i)=>{
+    const style=v.dirige?'background:rgba(244,205,39,.07);border-color:rgba(244,205,39,.28)':'';
+    const ico=v.dirige?'⭐':'🎤';
+    let opts='<option value="">— vacío —</option>';
+    vN.forEach(n=>{ opts+=`<option ${n===v.nombre?'selected':''}>${n}</option>`; });
+    html+=`<div class="voz-row-editor ${v.dirige?'is-lider':''}" data-vrow="${i}" style="${style}">
+      <span class="voz-lider-ico">${ico}</span>
+      <select class="er-sel" data-vsel="${i}" style="${v.dirige?'color:var(--yellow);font-weight:700':''}">${opts}</select>
+      <span style="font-size:.58rem;color:var(--text3);flex-shrink:0">${v.dirige?'LÍDER':'Voz'}</span>
+    </div>`;
+  });
+  return html;
+}
+
+// ── SUGGEST SETLIST ──
+function buildSuggestBox(){ return `<div class="suggest-box" id="suggest-box">
+  <div class="suggest-title">🎯 Sugerencia automática del repertorio</div>
+  <div id="suggest-rows"></div>
+  <button class="suggest-apply-all" id="suggest-apply-all" style="display:none" onclick="applyAllSuggestions()">✓ Aplicar todo el setlist sugerido</button>
+  <button onclick="document.getElementById('suggest-box').style.display='none'" style="font-size:.56rem;color:var(--text3);background:none;border:none;margin-top:5px">Cerrar</button>
+</div>`; }
+
+let _lastSugerencias=[];
+function runAutoSuggest(){
+  const tema=document.getElementById('e-tema')?.value||'';
+  const flujoStr=document.getElementById('e-flujo')?.value||'Rápida, Media, Lenta';
+  const flujo=flujoStr.split(',').map(s=>s.trim());
+  const fecha=_mes&&_idx!==null?(mesObj()?.fechas[_idx]||''):'';
+  const hist=MUSIC_ENGINE.buildUsageHistory(DOMINGOS);
+  const vDisp=vocesDisponibles(fecha);
+  const sugs=MUSIC_ENGINE.suggestSetlist(flujo,tema,hist,CANCIONES,vDisp);
+  _lastSugerencias=sugs;
+  const box=document.getElementById('suggest-box');
+  const rows=document.getElementById('suggest-rows');
+  if(!sugs.length){rows.innerHTML='<p style="font-size:.68rem;color:var(--text3)">No hay suficientes canciones para el flujo indicado.</p>';box.style.display='block';return;}
+  rows.innerHTML=sugs.map((s,i)=>`<div class="suggest-row">
+    <div>
+      <div class="suggest-song">${i+1}. ${s.nombre} <span style="font-size:.56rem;color:var(--text3)">(${s.tono} · ${s.bpm}bpm)</span></div>
+      <div class="suggest-meta">${s._tipo||''} · ${s.tema}</div>
+      ${s._lider?`<div class="suggest-ldr">● Líder sugerido: ${s._lider}</div>`:''}
+    </div>
+    <button class="suggest-use" onclick="useSuggestion(${i})">Usar</button>
+  </div>`).join('');
+  document.getElementById('suggest-apply-all').style.display='block';
+  box.style.display='block';
+}
+function useSuggestion(i){
+  const s=_lastSugerencias[i];
+  if(!s) return;
+  const tipos=['Rápida','Intermedia','Ministración','Ofrenda'];
+  const cNames=CANCIONES.map(c=>c.nombre);
+  const vN=voceNames();
+  const id=_sI++;
+  const div=document.createElement('div');
+  div.className='er';div.dataset.srow=id;
+  div.innerHTML=buildSetRow(id,s.nombre,tipos[i]||'Ofrenda',s._lider||'',cNames,vN);
+  document.getElementById('set-rows').appendChild(div);
+}
+function applyAllSuggestions(){
+  const tipos=['Rápida','Intermedia','Ministración','Ofrenda'];
+  const cNames=CANCIONES.map(c=>c.nombre);
+  const vN=voceNames();
+  const rows=document.getElementById('set-rows');
+  rows.innerHTML='';
+  _lastSugerencias.forEach((s,i)=>{
+    const id=_sI++;
+    const div=document.createElement('div');div.className='er';div.dataset.srow=id;
+    div.innerHTML=buildSetRow(id,s.nombre,tipos[i]||'Ofrenda',s._lider||'',cNames,vN);
+    rows.appendChild(div);
+  });
+  document.getElementById('suggest-box').style.display='none';
+}
+function buildSetRow(id,nombre,nota,lider,cNames,vN){
+  let opts=''; cNames.forEach(n=>{ opts+=`<option ${n===nombre?'selected':''}>${n}</option>`; });
+  let lOpts='<option value="">Sin líder</option>'; vN.forEach(n=>{ lOpts+=`<option ${n===lider?'selected':''}>${n}</option>`; });
+  return `<span class="er-ico" style="font-size:.56rem;width:12px">${id%1000}</span>
+    <select class="er-sel" data-ssel="${id}">${opts}</select>
+    <input class="er-in" data-snota="${id}" value="${nota}" placeholder="Nota" style="width:58px">
+    <select class="er-sel" style="font-size:.6rem;max-width:100px" data-splanb="${id}"><option value="">Sin B</option>${opts}</select>
+    <select class="er-sel" style="font-size:.6rem;max-width:90px;color:var(--teal)" data-sldr="${id}">${lOpts}</select>
+    <button class="er-del" onclick="this.closest('[data-srow]').remove()">✕</button>`;
+}
+
+// ── DOMINGO PANEL ──
+function domBody(d,fecha,esCena){
+  const names=allNames();const cNames=CANCIONES.map(c=>c.nombre);const vN=voceNames();
+  const tipo=d?d.tipo:esCena?'Cena':'Normal';
+  let bH='';
+  (d?d.banda:[]).forEach((b,i)=>{
+    let opts='';[...names,'Secuencia'].forEach(n=>{ opts+=`<option ${n===b.nombre?'selected':''}>${n}</option>`; });
+    bH+=`<div class="er" data-brow="${i}"><span class="er-ico">${b.icon}</span><select class="er-sel" data-bsel="${i}">${opts}</select><input class="er-in" data-brol="${i}" value="${b.rol||''}" placeholder="Rol" style="width:68px"><button class="er-del" onclick="this.closest('[data-brow]').remove()">✕</button></div>`;
+  });
+  let sH='';
+  (d?d.canciones:[]).forEach((c,i)=>{
+    sH+=`<div class="er" data-srow="${i}">${buildSetRow(i,c.nombre,c.nota||'',c.lider||'',cNames,vN)}</div>`;
+  });
+  const oc=d?.outfit?.color||'#132589',on=d?.outfit?.nombre||'';
+  return buildSuggestBox()+`
+    <div class="ai-row" style="margin-bottom:7px">
+      <span class="ai-txt">🎯 Sugerir setlist automáticamente</span>
+      <button class="ai-btn suggest" onclick="runAutoSuggest()">Sugerir</button>
+    </div>
+    <div class="ps"><div class="ps-t">Servicio</div>
+      <div class="fr"><label class="fl">Tema del domingo</label><input class="fi" id="e-tema" value="${d?.tema||''}"></div>
+      <div class="fr"><label class="fl">Lectura bíblica</label><input class="fi" id="e-lectura" value="${d?.lectura||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+        <div class="fr"><label class="fl">Tipo</label><select class="fs" id="e-tipo"><option ${tipo==='Normal'?'selected':''}>Normal</option><option ${tipo==='Cena'?'selected':''}>Cena</option></select></div>
+        <div class="fr"><label class="fl">⏰ Servicio</label><input class="fi" id="e-hora-serv" value="${d?.horario?.servicio||'9:00 am'}"></div>
+        <div class="fr"><label class="fl">🚪 Llegada</label><input class="fi" id="e-hora-llg" value="${d?.horario?.llegada||'8:15 am'}"></div>
+      </div>
+    </div>
+    <div class="ps"><div class="ps-t">Outfit del equipo</div>
+      <div class="fr"><div class="outfit-row"><input type="color" class="cswatch" id="e-color" value="${oc}"><input class="fi" id="e-outfit" value="${on}" placeholder="Nombre del color en español"></div></div>
+    </div>
+    <div class="ps"><div class="ps-t">Flujo espiritual</div>
+      <div class="fr"><label class="fl">Etapas separadas por coma</label><input class="fi" id="e-flujo" value="${d?.flujo?.join(', ')||'Celebración, Adoración, Rendición'}"></div>
+    </div>
+    <div class="ps"><div class="ps-t">⭐ Voces del servicio</div>
+      <p style="font-size:.58rem;color:var(--text3);margin-bottom:7px">La primera (⭐) es quien dirige el culto — se resalta en amarillo</p>
+      <div id="voces-rows">${buildVocesPanel(d?.voces)}</div>
+    </div>
+    <div class="ps"><div class="ps-t">Banda <span style="font-size:.54rem;color:var(--text3);font-weight:400">— usa "Secuencia" si falta un instrumento</span></div>
+      <div class="edit-rows" id="banda-rows">${bH}</div>
+      <button class="add-row" onclick="addBRow()">+ Músico / Secuencia</button>
+    </div>
+    <div class="ps"><div class="ps-t">Setlist · Plan A / Plan B · Líder</div>
+      <div class="edit-rows" id="set-rows">${sH}</div>
+      <button class="add-row" onclick="addSRow()">+ Canción</button>
+    </div>
+    ${d?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12px"><button class="btn-d" onclick="deleteDomingo()">Eliminar domingo</button></div>`:''}`;
+}
+
+function openDomingo(mes,idx){_mode='domingo';_mes=mes;_idx=idx;const d=DOMINGOS[mes][idx];openPanel(`Editar · ${d.fecha}`,d.tipo==='Cena'?'✦ Cena del Señor':'Servicio Regular',domBody(d,d.fecha,d.tipo==='Cena'));}
+function openNuevoDomingo(mes,idx,fecha,esCena){_mode='nuevo-domingo';_mes=mes;_idx=idx;openPanel(`Configurar · ${fecha}`,esCena?'✦ Cena del Señor':'Servicio Regular',domBody(null,fecha,esCena),'Crear servicio');}
+
+function buildDom(fecha,tipo){
+  const cNames=CANCIONES.map(c=>c.nombre);
+  const voces=[...document.querySelectorAll('[data-vrow]')].map(r=>({
+    nombre:r.querySelector('[data-vsel]').value,
+    rol:r.classList.contains('is-lider')?'Voz Líder':'Voz',
+    dirige:r.classList.contains('is-lider'),
+  }));
+  const banda=[...document.querySelectorAll('[data-brow]')].map(r=>({
+    icon:r.querySelector('.er-ico').textContent,
+    nombre:r.querySelector('[data-bsel]').value,
+    rol:r.querySelector('[data-brol]').value,
+  }));
+  const canciones=[...document.querySelectorAll('[data-srow]')].map(r=>{
+    const n=r.querySelector('[data-ssel]').value;
+    const cd=CANCIONES.find(c=>c.nombre===n);
+    return{nombre:n,nota:r.querySelector('[data-snota]').value,energia:cd?cd.energia:'Media',planb:r.querySelector('[data-splanb]').value,lider:r.querySelector('[data-sldr]').value};
+  });
+  return{id:'d'+Date.now(),fecha,tipo:document.getElementById('e-tipo').value,tema:document.getElementById('e-tema').value,lectura:document.getElementById('e-lectura').value,horario:{servicio:document.getElementById('e-hora-serv')?.value||'9:00 am',llegada:document.getElementById('e-hora-llg')?.value||'8:15 am'},outfit:{color:document.getElementById('e-color').value,nombre:document.getElementById('e-outfit').value},flujo:document.getElementById('e-flujo').value.split(',').map(s=>s.trim()).filter(Boolean),voces,banda,canciones,score:75};
+}
+function saveDomingo(){const d=DOMINGOS[_mes][_idx];const b=buildDom(d.fecha,d.tipo);b.id=d.id;b.score=d.score;DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();}
+function saveNuevoDomingo(){const m=mesObj();const f=m.fechas[_idx];const b=buildDom(f+' 2025',m.cena===_idx?'Cena':'Normal');DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();}
+function deleteDomingo(){if(!confirm('¿Eliminar?'))return;DOMINGOS[_mes][_idx]=null;closePanel();renderDomingos();}
+
+function addBRow(){
+  const id=_bI++;const names=allNames();const div=document.createElement('div');div.className='er';div.dataset.brow=id;
+  let opts='';[...names,'Secuencia'].forEach(n=>{ opts+=`<option>${n}</option>`; });
+  div.innerHTML=`<span class="er-ico">🎵</span><select class="er-sel" data-bsel="${id}">${opts}</select><input class="er-in" data-brol="${id}" value="" placeholder="Rol" style="width:68px"><button class="er-del" onclick="this.closest('[data-brow]').remove()">✕</button>`;
+  document.getElementById('banda-rows').appendChild(div);
+}
+function addSRow(){
+  const id=_sI++;const cNames=CANCIONES.map(c=>c.nombre);const vN=voceNames();
+  const div=document.createElement('div');div.className='er';div.dataset.srow=id;
+  div.innerHTML=buildSetRow(id,'','','',cNames,vN);
+  document.getElementById('set-rows').appendChild(div);
+}
+
+// ── MIEMBRO PANEL ──
+function miembroBody(m,isNew){
+  let rH='';
+  (m?m.roles:[]).forEach((r,i)=>{
+    rH+=`<div class="er" data-rrow="${i}"><input class="er-wide" data-rinst="${i}" value="${r.i}" placeholder="Instrumento"><select class="fs" style="width:110px;margin-left:4px;padding:4px 7px;font-size:.68rem" data-rnivel="${i}">${['Experto','Activo','En formación'].map(n=>`<option ${n===r.n?'selected':''}>${n}</option>`).join('')}</select><button class="er-del" onclick="this.closest('[data-rrow]').remove()" style="margin-left:4px">✕</button></div>`;
+  });
+  const reg=m?.registro||'';
+  const afin=m?.cancionesAfines?.join(', ')||'';
+  const artAfin=m?.artistasAfines?.join(', ')||'';
+  return `<div class="ps"><div class="ps-t">Datos</div>
+    <div class="fr"><label class="fl">Nombre</label><input class="fi" id="e-nombre" value="${m?.nombre||''}" placeholder="Nombre completo"></div>
+    <div class="fr"><label class="fl">Registro vocal</label>
+      <select class="fs" id="e-registro"><option value="">— Sin especificar —</option>${['soprano','mezzosoprano','contralto','tenor','barítono','bajo'].map(r=>`<option ${r===reg?'selected':''}>${r}</option>`).join('')}</select>
+    </div>
+    <div class="fr"><label class="fl">Artistas / estilos afines</label><input class="fi" id="e-art-afin" value="${artAfin}" placeholder="Elevation, Lakewood, BJ Putnam"></div>
+    <div class="fr"><label class="fl">Canciones que lidera (separadas por coma)</label>
+      <textarea class="fta" id="e-can-afin" placeholder="Praise, Decimos Amén, Nada es Imposible">${afin}</textarea>
+      <p style="font-size:.56rem;color:var(--text3);margin-top:2px">Se priorizan en sugerencias automáticas</p>
+    </div>
+  </div>
+  <div class="ps"><div class="ps-t">Roles</div><div class="edit-rows" id="roles-rows">${rH}</div><button class="add-row" onclick="addRolRow()">+ Rol</button></div>
+  ${!isNew?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12px"><button class="btn-d" onclick="deleteMiembro('${m?.id}')">Eliminar miembro</button></div>`:''}`;
+}
+function openMiembro(id){_mode='miembro';_id=id;const m=[...EQUIPO.voces,...EQUIPO.musicos].find(x=>x.id===id);openPanel(`Editar · ${m.nombre}`,[...EQUIPO.voces].some(x=>x.id===id)?'Voz':'Músico',miembroBody(m,false));}
+function openNuevoMiembro(g){_mode='nuevo-miembro';_grupo=g;openPanel('Nuevo miembro',g==='voces'?'Voz':'Músico',miembroBody(null,true),'Agregar');}
+function buildMiembro(ex){return{nombre:document.getElementById('e-nombre').value.trim(),registro:document.getElementById('e-registro')?.value||'',artistasAfines:(document.getElementById('e-art-afin')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),cancionesAfines:(document.getElementById('e-can-afin')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),roles:[...document.querySelectorAll('[data-rrow]')].map(r=>({i:r.querySelector('[data-rinst]').value,n:r.querySelector('[data-rnivel]').value})),disp:ex?{...ex.disp}:{jun:null,jul:null,ago:null,sep:null}};}
+function saveMiembro(){const all=[...EQUIPO.voces,...EQUIPO.musicos];const m=all.find(x=>x.id===_id);const b=buildMiembro(m);Object.assign(m,b);closePanel();renderEquipo();}
+function saveNuevoMiembro(){const n=document.getElementById('e-nombre').value.trim();if(!n)return alert('Ingresa un nombre');const b=buildMiembro(null);EQUIPO[_grupo].push({id:'u'+Date.now(),...b});closePanel();renderEquipo();}
+function deleteMiembro(id){if(!confirm('¿Eliminar?'))return;EQUIPO.voces=EQUIPO.voces.filter(x=>x.id!==id);EQUIPO.musicos=EQUIPO.musicos.filter(x=>x.id!==id);closePanel();renderEquipo();}
+function addRolRow(){const id=_rI++;const div=document.createElement('div');div.className='er';div.dataset.rrow=id;div.innerHTML=`<input class="er-wide" data-rinst="${id}" placeholder="Instrumento"><select class="fs" style="width:110px;margin-left:4px;padding:4px 7px;font-size:.68rem" data-rnivel="${id}"><option>Experto</option><option selected>Activo</option><option>En formación</option></select><button class="er-del" onclick="this.closest('[data-rrow]').remove()" style="margin-left:4px">✕</button>`;document.getElementById('roles-rows').appendChild(div);}
+
+// ── SONG PANEL ──
+function songBody(c){return `<div class="ps"><div class="ps-t">Info básica</div>
+  <div class="fr"><label class="fl">Nombre</label><input class="fi" id="s-nombre" value="${c?.nombre||''}" placeholder="Nombre de la canción"></div>
+  <div class="fr"><label class="fl">Artista</label><input class="fi" id="s-artista" value="${c?.artista||''}" placeholder="Artista"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+    <div class="fr"><label class="fl">Tonalidad</label><input class="fi" id="s-tono" value="${c?.tono||''}" placeholder="G"></div>
+    <div class="fr"><label class="fl">BPM</label><input class="fi" id="s-bpm" type="number" value="${c?.bpm||80}"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+    <div class="fr"><label class="fl">Energía</label><select class="fs" id="s-eng">${['Alta','Media','Baja'].map(e=>`<option ${e===c?.energia?'selected':''}>${e}</option>`).join('')}</select></div>
+    <div class="fr"><label class="fl">Tipo</label><select class="fs" id="s-cls">${['Rápida','Media','Lenta'].map(e=>`<option ${e===c?.clasificacion?'selected':''}>${e}</option>`).join('')}</select></div>
+    <div class="fr"><label class="fl">Dificultad</label><select class="fs" id="s-dif">${['Fácil','Media','Difícil'].map(e=>`<option ${e===c?.dificultad?'selected':''}>${e}</option>`).join('')}</select></div>
+  </div>
+  <div class="fr"><label class="fl">Tema / Mensaje</label><input class="fi" id="s-tema" value="${c?.tema||''}"></div>
+</div>
+<div class="ps"><div class="ps-t">Recursos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+    ${['multitrack','secuencia','pads','click'].map(r=>`<label style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--text2);cursor:pointer;padding:5px 7px;border-radius:5px;border:1.5px solid var(--border);background:var(--bg2)"><input type="checkbox" id="s-${r}" ${c?.recursos?.[r]?'checked':''} style="accent-color:var(--purple)">${r}</label>`).join('')}
+  </div>
+</div>
+<div class="ps"><div class="ps-t">Links</div>
+  <div class="fr"><label class="fl">▶ YouTube / versión de referencia</label><input class="fi" id="s-ver" value="${c?.version||''}" placeholder="https://..."></div>
+  <div class="fr"><label class="fl">♩ Partitura (Google Drive)</label><input class="fi" id="s-part" value="${c?.partitura||''}" placeholder="https://drive.google.com/..."></div>
+  <div class="fr"><label class="fl">🎵 Secuencias.com / RehearsalMix</label><input class="fi" id="s-seq" value="${c?.secuencias||''}" placeholder="https://secuencias.com/..."></div>
+</div>
+${c?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12px"><button class="btn-d" onclick="deleteCancion('${c?.id}')">Eliminar canción</button></div>`:''}`;
+}
+function openSong(id){_mode='song';_id=id;const c=CANCIONES.find(x=>x.id===id);openPanel(`Editar · ${c.nombre}`,`${c.artista||'—'} · ${c.tono}`,songBody(c));}
+function openNuevaSong(){_mode='nueva-song';openPanel('Nueva canción','Agregar al repertorio',songBody(null),'Agregar');}
+function buildSong(c){return{nombre:document.getElementById('s-nombre').value,artista:document.getElementById('s-artista').value,tono:document.getElementById('s-tono').value||'?',bpm:parseInt(document.getElementById('s-bpm').value)||80,energia:document.getElementById('s-eng').value,clasificacion:document.getElementById('s-cls').value,dificultad:document.getElementById('s-dif').value,tema:document.getElementById('s-tema').value,recursos:{multitrack:document.getElementById('s-multitrack').checked,secuencia:document.getElementById('s-secuencia').checked,pads:document.getElementById('s-pads').checked,click:document.getElementById('s-click').checked},version:document.getElementById('s-ver').value,partitura:document.getElementById('s-part').value,secuencias:document.getElementById('s-seq').value};}
+function saveSong(){const c=CANCIONES.find(x=>x.id===_id);Object.assign(c,buildSong(c));closePanel();renderCanciones();}
+function saveNuevaSong(){const n=document.getElementById('s-nombre').value.trim();if(!n)return alert('Nombre requerido');CANCIONES.push({id:'c'+Date.now(),nuevo:true,...buildSong(null)});closePanel();renderCanciones();}
+function deleteCancion(id){if(!confirm('¿Eliminar?'))return;CANCIONES=CANCIONES.filter(c=>c.id!==id);closePanel();renderCanciones();}
+
+// ── ENSAYO PANEL ──
+function ensBody(e){return `<div class="ps"><div class="ps-t">Ensayo</div>
+  <div class="fr"><label class="fl">Fecha</label><input class="fi" id="en-f" value="${e?.fecha||''}" placeholder="Sáb 5 Jul"></div>
+  <div class="fr"><label class="fl">Título</label><input class="fi" id="en-t" value="${e?.titulo||''}" placeholder="Ensayo general — Julio"></div>
+</div>
+<div class="ps"><div class="ps-t">Repertorio activo (refuerzo)</div>
+  <div class="fr"><label class="fl">Separadas por coma</label><input class="fi" id="en-r" value="${e?.songs_refuerzo?.join(', ')||''}" placeholder="Glorioso, Decimos Amén, Nada es Imposible"></div>
+</div>
+<div class="ps"><div class="ps-t">★ Canciones nuevas (van al final)</div>
+  <div class="fr"><label class="fl">Separadas por coma</label><input class="fi" id="en-n" value="${e?.songs_nuevas?.join(', ')||''}" placeholder="Hay Algo Nuevo, Como en el Cielo"></div>
+</div>
+<div class="ps"><div class="ps-t">Notas del ensayo</div><div class="fr"><textarea class="fta" id="en-no">${e?.notas||''}</textarea></div></div>
+${e?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12px"><button class="btn-d" onclick="ENSAYOS=ENSAYOS.filter(x=>x.id!=='${e?.id}');closePanel();renderEnsayos()">Eliminar ensayo</button></div>`:''}`;
+}
+function openEnsayo(id){_mode='ensayo';_id=id;const e=ENSAYOS.find(x=>x.id===id);openPanel('Editar ensayo',e.fecha,ensBody(e));}
+function openNuevoEnsayo(){_mode='nuevo-ensayo';openPanel('Nuevo ensayo','Ruta de ensayos',ensBody(null),'Agregar');}
+function buildEnsayo(){const p=v=>v.split(',').map(s=>s.trim()).filter(Boolean);return{fecha:document.getElementById('en-f').value,titulo:document.getElementById('en-t').value,songs_refuerzo:p(document.getElementById('en-r').value),songs_nuevas:p(document.getElementById('en-n').value),notas:document.getElementById('en-no').value};}
+function saveEnsayo(){const e=ENSAYOS.find(x=>x.id===_id);const b=buildEnsayo();b.transiciones=e.transiciones;Object.assign(e,b);closePanel();renderEnsayos();}
+function saveNuevoEnsayo(){ENSAYOS.push({id:'e'+Date.now(),...buildEnsayo(),transiciones:{}});closePanel();renderEnsayos();}
+
+// ═══════════════════════════ NAV + THEME ═══════════════════════════
+const HTAB={
+  mes:{eye:'Planificación mensual',sub:'Exporta para WhatsApp con 📤'},
+  ensayo:{eye:'Ruta estratégica',title:'Ensayos · Jun–Sep 2025',sub:'Transiciones automáticas + enriquecimiento Gemini'},
+  equipo:{eye:'Ministerio de Alabanza',title:'Equipo TDF Worship',sub:'Marca tu disponibilidad directamente'},
+  canciones:{eye:'Base musical',title:'Repertorio Activo',sub:'Ver versión · Partitura PDF · Secuencias.com'},
+};
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+  const h=HTAB[id];
+  document.getElementById('h-eye').textContent=h.eye;
+  if(h.title) document.getElementById('h-title').textContent=h.title;
+  document.getElementById('h-sub').textContent=h.sub;
+  if(id==='equipo') renderEquipo();
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙':'☀️';
+}
+function renderAll(){renderMonthNav();renderDomingos();renderEnsayos();renderCanciones();renderEquipo();}
+
+// ═══════════════════════════ INIT ═══════════════════════════
+renderMonthNav();renderDomingos();renderEnsayos();renderCanciones();
+</script>
+</body>
+</html>
