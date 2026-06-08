@@ -414,6 +414,7 @@ main{padding:12px 16px}
   <!-- Firebase compat (no modules needed) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <header>
@@ -935,7 +936,7 @@ let EQUIPO={
     {id:'v1',nombre:'David García',registro:'tenor',artistasAfines:['Elevation','Lakewood'],cancionesAfines:['Praise','Decimos Amén','Nada es Imposible','Hay Algo Nuevo','Todopoderoso','Vamos a Cantar'],roles:[{i:'Voz principal',n:'Experto'},{i:'Guitarra eléctrica',n:'Activo'}],disp:{jun:['7 Jun','14 Jun','28 Jun'],jul:null,ago:null,sep:null}},
     {id:'v2',nombre:'Majito (María José)',registro:'soprano',artistasAfines:['Hillsong','Bethel'],cancionesAfines:['Buen Buen Padre','Ven y Lléname','Constante Amor','Amor Como Fuego','Como en el Cielo'],roles:[{i:'Voz principal',n:'Experto'}],disp:{jun:null,jul:null,ago:null,sep:null}},
     {id:'v3',nombre:'Miguel Méndez',registro:'barítono',artistasAfines:['Marcos Witt','Marco Barrientos'],cancionesAfines:['Glorioso','Único Dios','Solo Hay Uno','Yo Te Amo','Eres Fiel'],roles:[{i:'Voz',n:'Activo'},{i:'Bajo',n:'Activo'}],disp:{jun:['7 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
-    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta un Corazón','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['14 Jun','21 Jun'],jul:null,ago:null,sep:null}}
+    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['14 Jun'],jul:null,ago:null,sep:null}}
   ],
   musicos:[
     {id:'v6',nombre:'Alejandro Lizarazo',registro:'',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
@@ -1035,9 +1036,10 @@ let CANCIONES = [
   {id:'c83',nombre:'Gracia Sublime',artista:'Phil Wickham',tono:'Ab',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Gracia de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1mIEDKy5SzbMgLNrM9ya3wq4n9teWCjDp/view',secuencias:''},
 ];
 let ENSAYOS=[
-  {id:'e1',fecha:'Sáb 7 Jun',titulo:'Ensayo general — Junio',notas:'Primera lectura de Hay Algo Nuevo sin presión.',songs_nuevas:['Hay Algo Nuevo'],songs_refuerzo:['Glorioso','Amor Como Fuego','Nada es Imposible'],transiciones:{}},
-  {id:'e2',fecha:'Sáb 14 Jun',titulo:'Ensayo general — Junio (2)',notas:'Consolidar Hay Algo Nuevo. Intro de Como en el Cielo solo guitarras y voces.',songs_nuevas:['Como en el Cielo'],songs_refuerzo:['Hay Algo Nuevo','Decimos Amén','Vamos a Cantar'],transiciones:{}},
-  {id:'e3',fecha:'Sáb 5 Jul',titulo:'Ensayo general — Julio',notas:'Como en el Cielo con banda completa. Objetivo: lista para julio.',songs_nuevas:[],songs_refuerzo:['Como en el Cielo','Praise','Único Dios','Eres Fiel'],transiciones:{}}
+  {id:'e1',fecha:'Jue 5 Jun',titulo:'Ensayo previo — Dom 7 Jun (Cena)',notas:'Repasar las canciones de la Cena. Trabajar transición Que se Llene Tu Casa → Solo Hay Uno → Ven y Lléname.',songs_nuevas:[],songs_refuerzo:['Que se Llene Tu Casa','Solo Hay Uno','Ven y Lléname','Lo Único que Quiero','Dios Ha Sido Bueno'],transiciones:{}},
+  {id:'e2',fecha:'Jue 12 Jun',titulo:'Ensayo previo — Dom 14 Jun',notas:'Flujo Celebración → Gratitud → Fe. Refuerzo de Buen Buen Padre y Eres Fiel.',songs_nuevas:[],songs_refuerzo:['Nada es Imposible','Eres Fiel','Buen Buen Padre','Todo Lo Haces Bien'],transiciones:{}},
+  {id:'e3',fecha:'Jue 19 Jun',titulo:'Ensayo previo — Dom 21 Jun',notas:'Decimos Amén con energía. Transición media a Amor Como Fuego.',songs_nuevas:[],songs_refuerzo:['Decimos Amén','Único Dios','Amor Como Fuego','Siempre que me Mires'],transiciones:{}},
+  {id:'e4',fecha:'Jue 26 Jun',titulo:'Ensayo previo — Dom 28 Jun',notas:'Gozo y energía. Trabajar subida Vamos a Cantar → Todopoderoso. Primera lectura Hay Algo Nuevo.',songs_nuevas:['Hay Algo Nuevo'],songs_refuerzo:['Vamos a Cantar','Todopoderoso','Yo Te Amo','Solo Hay Uno'],transiciones:{}}
 ];
 const RUTA_NUEVAS=[
   {cancion:'Hay Algo Nuevo',fase:'Nueva',desc:'Lectura Jun 7 · Banda Jun 14 · Activa Jul',dot:'rd-n',ph:'rp-n'},
@@ -1067,6 +1069,41 @@ function vocesDisponibles(fechaCorta){
 }
 
 // ═══════════════════════════ EXPORT WHATSAPP ═══════════════════════════
+
+async function exportDomingoImage(mesId, idx){
+  const d=DOMINGOS[mesId]?.[idx];
+  if(!d) return;
+  const oc=d.outfit?.color||'#132589';
+  const on=d.outfit?.nombre||'';
+  function ctc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(r*299+g*587+b*114)/1000>128?'#000':'#fff';}
+  const vl=d.voces?.find(v=>v.dirige&&v.nombre);
+  const otrasV=d.voces?.filter(v=>!v.dirige&&v.nombre)||[];
+  const bandaHTML=d.banda.map(b=>`<div style="display:flex;gap:8px;margin:2px 0"><span style="width:18px;text-align:center">${b.icon}</span><span style="font-size:12px;color:#a09cc0">${b.rol}:</span><span style="font-size:12px;font-weight:600;color:#f0eeff">${b.nombre}</span></div>`).join('');
+  const slHTML=d.canciones.map((c,i)=>{const cd=CANCIONES.find(x=>x.nombre===c.nombre);return `<div style="display:flex;align-items:center;gap:6px;margin:3px 0"><span style="font-size:11px;color:#605c80;width:14px">${i+1}</span><span style="font-size:12px;font-weight:600;flex:1;color:#f0eeff">${c.nombre}</span>${cd?`<span style="font-size:10px;background:#132589;color:#aabbff;padding:1px 5px;border-radius:3px">${cd.tono}</span>`:''}<span style="font-size:10px;color:#605c80">${c.nota}</span></div>`;}).join('');
+  const div=document.createElement('div');
+  div.style.cssText='position:fixed;left:0;top:0;width:360px;background:#0e0d12;color:#f0eeff;font-family:Arial,sans-serif;padding:20px;z-index:9999;';
+  div.innerHTML=`<div style="background:linear-gradient(135deg,#0a1060,#132589,#8740bf);border-radius:8px;padding:14px;margin-bottom:12px"><div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#30dad8;margin-bottom:4px">TDF WORSHIP</div><div style="font-size:20px;font-weight:800;color:#fff">${d.fecha}</div><div style="font-size:11px;color:rgba(255,255,255,.5)">${d.tipo==='Cena'?'✦ Cena del Señor':'Servicio Regular'}</div>${d.horario?`<div style="margin-top:6px;font-size:11px;background:rgba(255,255,255,.1);border-radius:4px;padding:3px 8px;display:inline-block;color:#fff">⏰ ${d.horario.servicio} · Llegada ${d.horario.llegada}</div>`:''}</div><div style="background:#1e1c2a;border-radius:8px;padding:12px;margin-bottom:10px"><div style="font-size:14px;font-weight:700;color:#f0eeff;margin-bottom:2px">${d.tema}</div><div style="font-size:11px;color:#605c80">📖 ${d.lectura}</div></div>${vl?`<div style="background:rgba(244,205,39,.12);border:1px solid rgba(244,205,39,.3);border-radius:8px;padding:10px;margin-bottom:10px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#f4cd27;margin-bottom:4px">⭐ Voz Líder</div><div style="font-size:15px;font-weight:800;color:#f4cd27">${vl.nombre}</div>${otrasV.length?`<div style="font-size:11px;color:#a09cc0;margin-top:4px">Voces: ${otrasV.map(v=>v.nombre).join(', ')}</div>`:''}</div>`:''}<div style="background:#1e1c2a;border-radius:8px;padding:12px;margin-bottom:10px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#605c80;margin-bottom:7px">Banda</div>${bandaHTML}</div><div style="background:#1e1c2a;border-radius:8px;padding:12px;margin-bottom:10px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#605c80;margin-bottom:7px">🎶 Setlist</div>${slHTML}</div>${on?`<div style="background:${oc};border-radius:8px;padding:8px 12px;text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:${ctc(oc)};opacity:.7">Color</div><div style="font-size:13px;font-weight:700;color:${ctc(oc)}">${on}</div></div>`:''}`;
+  document.body.appendChild(div);
+  try {
+    await new Promise(r=>setTimeout(r,300));
+    if(typeof html2canvas!=='undefined'){
+      const canvas=await html2canvas(div,{backgroundColor:'#0e0d12',scale:2,useCORS:true,allowTaint:true,logging:false});
+      document.body.removeChild(div);
+      const link=document.createElement('a');
+      link.download='TDF_'+d.fecha.replace(/ /g,'_')+'.jpg';
+      link.href=canvas.toDataURL('image/jpeg',0.92);
+      document.body.appendChild(link);link.click();document.body.removeChild(link);
+    } else {
+      document.body.removeChild(div);
+      exportDomingo(mesId,idx);
+    }
+  } catch(err){
+    if(document.body.contains(div)) document.body.removeChild(div);
+    console.error('Export JPG error:',err);
+    exportDomingo(mesId,idx);
+  }
+}
+
 function exportDomingo(mesId, idx){
   const mes=MESES.find(m=>m.id===mesId);
   const d=DOMINGOS[mesId][idx];
@@ -1176,13 +1213,19 @@ function renderDomingos(){
       vocesH=d.voces.map(v=>{
         if(v.dirige&&v.nombre) return `<div class="voz-lider-row"><span class="b-ico">⭐</span><span class="voz-lider-name">${v.nombre}</span><span class="voz-lider-tag">VOZ LÍDER</span></div>`;
         if(v.nombre) return `<div class="band-row"><span class="b-ico">🎤</span><span class="b-name">${v.nombre}</span><span class="b-rol">${v.rol||'Voz'}</span></div>`;
-        return `<div class="band-row voz-empty"><span class="b-ico">🎤</span><span class="b-name">—</span><span class="b-rol">Voz</span></div>`;
+        return ''; // hide empty voice slots
       }).join('');
     }
 
     // Legend de líderes únicos
     const ldrs=[...new Set(d.canciones.map(c=>c.lider).filter(Boolean))];
-    const legendH=ldrs.map(l=>`<span class="sl-leg-item"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${ldrColor(l)}"></span>${l.split(' ')[0]}</span>`).join('');
+    const legendH=ldrs.map(l=>{
+      const parts=l.split(' ');
+      // "David García" -> "David G." | "Majito (María José)" -> "Majito M."
+      const firstName=parts[0];
+      const apellidoInit=parts.length>=2?parts[1].replace('(','')[0]+'.':'';
+      return `<span class="sl-leg-item"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${ldrColor(l)}"></span><span style="font-weight:600;font-size:.5rem">${firstName} ${apellidoInit}</span></span>`;
+    }).join('');
 
     // Setlist
     const slH=d.canciones.map((c,j)=>{
@@ -1198,6 +1241,7 @@ function renderDomingos(){
         <span class="sl-num">${j+1}</span>
         <span class="sl-ldr-dot" style="background:${col}${hasBorder}" title="${c.lider?'Líder: '+c.lider:''}"></span>
         <span class="sl-name">${c.nombre}</span>
+        ${(()=>{const cd=songData(c.nombre);return cd?`<span style="font-size:.5rem;font-weight:700;background:rgba(19,37,137,.5);color:#aabbff;padding:1px 4px;border-radius:3px;flex-shrink:0">${cd.tono}</span>`:''})()}
         <span class="sl-nota">${c.nota}</span>
         ${c.planb?`<span class="sl-planb">/ ${c.planb}</span>`:''}
         <span class="e-dot ${c.energia==='Alta'?'ea':c.energia==='Media'?'em':'eb'}"></span>
@@ -1232,7 +1276,10 @@ function renderDomingos(){
           <div class="score-w"><span class="sc-lbl">Cohesión</span><div class="sc-bar"><div class="sc-fill" style="width:${d.score}%"></div></div><span class="sc-num">${d.score}</span></div>
           <div class="card-btns">
             ${isEditor?`<button class="edit-btn" onclick="openDomingo('${activeMes}',${i})">✏</button>`:''}
-            <button class="export-btn" onclick="exportDomingo('${activeMes}',${i})">📤</button>
+            <div style="display:flex;gap:3px">
+            <button class="export-btn" onclick="exportDomingoImage('${activeMes}',${i})" style="font-size:.52rem;font-weight:800;letter-spacing:.04em">JPG</button>
+            <button class="export-btn" onclick="exportDomingo('${activeMes}',${i})" title="Exportar texto WhatsApp">📤</button>
+          </div>
           </div>
         </div>
       </div>
@@ -1254,7 +1301,8 @@ function renderEnsayos(){
       const clsCls=cd?(cd.clasificacion==='Rápida'?'esi-r':cd.clasificacion==='Lenta'?'esi-l':'esi-m'):'esi-m';
       const nextS=allSongs[i+1];
       const nextCd=nextS?songData(nextS.n):null;
-      const localT=(cd&&nextCd)?MUSIC_ENGINE.buildLocalTransition(cd,nextCd):null;
+      const localT=(cd&&nextCd)?MUSIC_ENGINE.buildLocalTransition(cd,nextCd)
+      :(nextS?{acordes:'↕ Transición',tecnica:'Pausa breve entre canciones',tempo:'Mantener tempo',palabras:''}:null);
       const savedT=nextS?trans[s.n+'__'+nextS.n]:null;
       const displayT=savedT||localT;
 
@@ -1494,75 +1542,363 @@ function savePanel(){
 }
 
 // ── VOCES PANEL BUILDER (no nested template literals) ──
-function buildVocesPanel(currentVoces){
+
+// Build a single banda row with instrument-filtered musician options
+function buildBandaRow(id, icon, rol, selectedNombre, fechaCorta){
+  // Get all musicians+voces who can play this instrument
+  const allMembers=[...EQUIPO.musicos,...EQUIPO.voces];
+  let filtered;
+  if(rol){
+    const kw=rol.toLowerCase().split('/')[0].trim();
+    filtered=allMembers.filter(m=>m.roles.some(r=>r.i.toLowerCase().includes(kw)));
+  } else {
+    filtered=allMembers;
+  }
+  // Build options: available enabled, unavailable disabled
+  const avail=rol?getMembersForInstrument(rol,fechaCorta):getAvailableMembers('musicos',fechaCorta).concat(getAvailableMembers('voces',fechaCorta));
+  const availNames=new Set(avail.map(m=>m.nombre));
+
+  let opts='<option value="">— elegir —</option>';
+  filtered.forEach(m=>{
+    const isAvail=availNames.has(m.nombre);
+    const sel=m.nombre===selectedNombre?'selected':'';
+    if(isAvail){
+      opts+=`<option value="${m.nombre}" ${sel}>${m.nombre}</option>`;
+    } else {
+      // Show but disabled
+      opts+=`<option value="${m.nombre}" ${sel} disabled style="color:gray">${m.nombre} (no disp.)</option>`;
+    }
+  });
+  // Always add Secuencia
+  opts+=`<option value="Secuencia" ${'Secuencia'===selectedNombre?'selected':''}>Secuencia</option>`;
+
+  // ROL selector with common options
+  const roles=['Batería','Bajo','Piano / Teclado','Guitarra','Voz','Dirección'];
+  let rolOpts='<option value="">Rol...</option>';
+  roles.forEach(r=>{ rolOpts+=`<option value="${r}" ${r===rol?'selected':''}>${r}</option>`; });
+
+  return `<span class="er-ico">${icon}</span>
+    <select class="er-sel" style="max-width:95px" data-brol="${id}" onchange="onBandaRolChange(this)">${rolOpts}</select>
+    <select class="er-sel" data-bsel="${id}">${opts}</select>
+    <button class="er-del" onclick="this.closest('[data-brow]').remove()">✕</button>`;
+}
+
+// When rol changes, rebuild musician dropdown filtered by that instrument
+function onBandaRolChange(rolSel){
+  const row=rolSel.closest('[data-brow]');
+  if(!row) return;
+  const namesSel=row.querySelector('[data-bsel]');
+  if(!namesSel) return;
+  const rol=rolSel.value;
+  const fc=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  const currentName=namesSel.value;
+  // Rebuild options
+  const allMembers=[...EQUIPO.musicos,...EQUIPO.voces];
+  let filtered=rol?allMembers.filter(m=>m.roles.some(r=>r.i.toLowerCase().includes(rol.toLowerCase().split('/')[0].trim()))):allMembers;
+  const avail=rol?getMembersForInstrument(rol,fc):[...getAvailableMembers('musicos',fc),...getAvailableMembers('voces',fc)];
+  const availNames=new Set(avail.map(m=>m.nombre));
+  namesSel.innerHTML='<option value="">— elegir —</option>';
+  filtered.forEach(m=>{
+    const opt=document.createElement('option');
+    opt.value=m.nombre;
+    opt.textContent=m.nombre+(availNames.has(m.nombre)?'':' (no disp.)');
+    opt.disabled=!availNames.has(m.nombre);
+    if(!availNames.has(m.nombre)) opt.style.color='gray';
+    if(m.nombre===currentName) opt.selected=true;
+    namesSel.appendChild(opt);
+  });
+  const seq=document.createElement('option');
+  seq.value='Secuencia';seq.textContent='Secuencia';
+  if('Secuencia'===currentName) seq.selected=true;
+  namesSel.appendChild(seq);
+}
+
+// Get members who can play a specific instrument
+function getMembersForInstrument(instrumento, fechaCorta){
+  const allM=[...EQUIPO.musicos,...EQUIPO.voces];
+  // Normalize instrument keyword
+  const kw=instrumento.toLowerCase().split('/')[0].trim();
+  return allM.filter(m=>{
+    const hasSkill=m.roles.some(r=>r.i.toLowerCase().includes(kw));
+    if(!hasSkill) return false;
+    // Check availability
+    const d=m.disp[activeMes];
+    if(d===null) return true; // pending
+    if(!fechaCorta) return true;
+    return d.includes(fechaCorta);
+  });
+}
+
+// Refresh a banda select options when rol changes
+function refreshBandaOpts(sel){
+  if(!sel) return;
+  const row=sel.closest('[data-brow]');
+  if(!row) return;
+  const rolInput=row.querySelector('[data-brol]');
+  const rol=rolInput?rolInput.value:'';
+  if(!rol) return;
+  const fechaCorta=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  const candidates=getMembersForInstrument(rol, fechaCorta);
+  const currentVal=sel.value;
+  // Rebuild options: available enabled, unavailable disabled
+  const allForInstr=getMembersForInstrument(rol,''); // all regardless of avail
+  sel.innerHTML='';
+  const blank=document.createElement('option');blank.value='';blank.textContent='— elegir —';sel.appendChild(blank);
+  allForInstr.forEach(m=>{
+    const opt=document.createElement('option');
+    opt.value=m.nombre;
+    opt.textContent=m.nombre;
+    // Disable if not available
+    const avail=getMembersForInstrument(rol,fechaCorta).find(x=>x.nombre===m.nombre);
+    if(!avail){
+      opt.disabled=true;
+      opt.textContent=m.nombre+' (no disponible)';
+      opt.style.color='var(--text4)';
+    }
+    if(m.nombre===currentVal) opt.selected=true;
+    sel.appendChild(opt);
+  });
+  // Add Secuencia option
+  const seq=document.createElement('option');seq.value='Secuencia';seq.textContent='Secuencia';
+  if('Secuencia'===currentVal) seq.selected=true;
+  sel.appendChild(seq);
+}
+
+function getAvailableMembers(grupo, fechaCorta){
+  return EQUIPO[grupo].filter(m=>{
+    if(!fechaCorta) return true;
+    const d=m.disp[activeMes];
+    if(d===null) return true;
+    return d.includes(fechaCorta);
+  });
+}
+
+function buildVocesPanel(currentVoces, fechaCorta){
   const defaults=[
     {nombre:'',rol:'Voz Líder',dirige:true},
     {nombre:'',rol:'Voz',dirige:false},
     {nombre:'',rol:'Voz',dirige:false},
     {nombre:'',rol:'Voz',dirige:false},
-    {nombre:'',rol:'Voz',dirige:false}
+    {nombre:'',rol:'Voz',dirige:false},
   ];
   const vList=currentVoces||defaults;
-  const vN=voceNames();
+  const availVoces=getAvailableMembers('voces',fechaCorta);
   let html='';
   vList.forEach((v,i)=>{
     const style=v.dirige?'background:rgba(244,205,39,.07);border-color:rgba(244,205,39,.28)':'';
     const ico=v.dirige?'⭐':'🎤';
     let opts='<option value="">— vacío —</option>';
-    vN.forEach(n=>{ opts+=`<option ${n===v.nombre?'selected':''}>${n}</option>`; });
+    availVoces.forEach(m=>{ opts+=`<option ${m.nombre===v.nombre?'selected':''}>${m.nombre}</option>`; });
+    if(v.nombre && !availVoces.find(m=>m.nombre===v.nombre)){
+      opts+=`<option value="${v.nombre}" selected>${v.nombre} ⚠</option>`;
+    }
     html+=`<div class="voz-row-editor ${v.dirige?'is-lider':''}" data-vrow="${i}" style="${style}">
       <span class="voz-lider-ico">${ico}</span>
-      <select class="er-sel" data-vsel="${i}" style="${v.dirige?'color:var(--yellow);font-weight:700':''}">${opts}</select>
+      <select class="er-sel" data-vsel="${i}" style="${v.dirige?'color:var(--yellow);font-weight:700':''}">
+        ${opts}
+      </select>
       <span style="font-size:.58rem;color:var(--text3);flex-shrink:0">${v.dirige?'LÍDER':'Voz'}</span>
     </div>`;
   });
   return html;
 }
-
 // ── SUGGEST SETLIST ──
 function buildSuggestBox(){ return `<div class="suggest-box" id="suggest-box">
-  <div class="suggest-title">🎯 Sugerencia automática del repertorio</div>
+  <div class="suggest-title" id="suggest-box-title">🎯 Sugerencia automática</div>
   <div id="suggest-rows"></div>
   <button class="suggest-apply-all" id="suggest-apply-all" style="display:none" onclick="applyAllSuggestions()">✓ Aplicar todo el setlist sugerido</button>
   <button onclick="document.getElementById('suggest-box').style.display='none'" style="font-size:.56rem;color:var(--text3);background:none;border:none;margin-top:5px">Cerrar</button>
 </div>`; }
 
 let _lastSugerencias=[];
-function runAutoSuggest(){
+// ── Smart suggest: 3 separate buttons ──
+function suggestCanciones(){
   const tema=document.getElementById('e-tema')?.value||'';
   const flujoStr=document.getElementById('e-flujo')?.value||'Rápida, Media, Lenta';
   const flujo=flujoStr.split(',').map(s=>s.trim());
-  const fecha=_mes&&_idx!==null?(mesObj()?.fechas[_idx]||''):'';
+  const fecha=_mes&&_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
   const hist=MUSIC_ENGINE.buildUsageHistory(DOMINGOS);
   const vDisp=vocesDisponibles(fecha);
   const sugs=MUSIC_ENGINE.suggestSetlist(flujo,tema,hist,CANCIONES,vDisp);
   _lastSugerencias=sugs;
-  const box=document.getElementById('suggest-box');
-  const rows=document.getElementById('suggest-rows');
-  if(!sugs.length){rows.innerHTML='<p style="font-size:.68rem;color:var(--text3)">No hay suficientes canciones para el flujo indicado.</p>';box.style.display='block';return;}
+  const inlineBox=document.getElementById('suggest-canc-inline');
+  const box=inlineBox||document.getElementById('suggest-box');
+  const rows=inlineBox?inlineBox:document.getElementById('suggest-rows');
+  if(inlineBox) inlineBox.style.display='block';
+  if(!sugs.length){rows.innerHTML='<p style="font-size:.68rem;color:var(--text3)">Sin sugerencias disponibles.</p>';box.style.display='block';return;}
+  if(!inlineBox) document.getElementById('suggest-box-title').textContent='🎵 Canciones sugeridas';
   rows.innerHTML=sugs.map((s,i)=>`<div class="suggest-row">
     <div>
-      <div class="suggest-song">${i+1}. ${s.nombre} <span style="font-size:.56rem;color:var(--text3)">(${s.tono} · ${s.bpm}bpm)</span></div>
-      <div class="suggest-meta">${s._tipo||''} · ${s.tema}</div>
-      ${s._lider?`<div class="suggest-ldr">● Líder sugerido: ${s._lider}</div>`:''}
+      <div class="suggest-song">${i+1}. ${s.nombre} <span style="font-size:.54rem;background:rgba(19,37,137,.4);color:#aabbff;padding:1px 4px;border-radius:3px">${s.tono}</span> <span style="font-size:.56rem;color:var(--text3)">${s.bpm}bpm · ${s._tipo||''}</span></div>
+      <div class="suggest-meta">${s.tema}</div>
+      ${s._lider?`<div class="suggest-ldr">● ${s._lider}</div>`:''}
     </div>
     <button class="suggest-use" onclick="useSuggestion(${i})">Usar</button>
   </div>`).join('');
-  document.getElementById('suggest-apply-all').style.display='block';
-  box.style.display='block';
+  const applyBtn=document.getElementById('suggest-apply-all');
+  if(applyBtn) applyBtn.style.display='block';
+  if(!inlineBox) box.style.display='block';
+  // Retry button
+  const _rcDiv=document.getElementById('suggest-retry-canc')||document.createElement('div');
+  _rcDiv.id='suggest-retry-canc';
+  _rcDiv.innerHTML='<button onclick="suggestCanciones(true)" style="width:100%;margin-top:6px;background:rgba(135,64,191,.08);border:1.5px solid rgba(135,64,191,.2);color:var(--purple);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;text-transform:uppercase">🔀 Otro intento</button>';
+  if(!document.getElementById('suggest-retry-canc') && rows) rows.after?rows.after(_rcDiv):rows.parentElement?.appendChild(_rcDiv);
 }
-function useSuggestion(i){
-  const s=_lastSugerencias[i];
-  if(!s) return;
-  const tipos=['Rápida','Intermedia','Ministración','Ofrenda'];
-  const cNames=CANCIONES.map(c=>c.nombre);
-  const vN=voceNames();
-  const id=_sI++;
-  const div=document.createElement('div');
-  div.className='er';div.dataset.srow=id;
-  div.innerHTML=buildSetRow(id,s.nombre,tipos[i]||'Ofrenda',s._lider||'',cNames,vN);
-  document.getElementById('set-rows').appendChild(div);
+
+function suggestBanda(){
+  const fecha=_mes&&_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  // Get available musicians
+  const availMus=getAvailableMembers('musicos',fecha);
+  const roles=['Batería','Bajo','Piano / Teclado','Guitarra'];
+  const inlineBox=document.getElementById('suggest-banda-inline');
+  const box=inlineBox||document.getElementById('suggest-box');
+  const rows=inlineBox?inlineBox:document.getElementById('suggest-rows');
+  if(inlineBox) inlineBox.style.display='block';
+  else { document.getElementById('suggest-box-title').textContent='🥁 Banda sugerida'; box.style.display='block'; }
+  // Suggest: best available per role
+  let html='';
+  const used=new Set();
+  roles.forEach(rol=>{
+    const candidates=availMus.filter(m=>
+      !used.has(m.id) && m.roles.some(r=>r.i.includes(rol.split('/')[0].trim()))
+    ).sort((a,b)=>{
+      const lvl={Experto:3,Activo:2,'En formación':1};
+      const la=a.roles.find(r=>r.i.includes(rol.split('/')[0].trim()))?.n||'';
+      const lb=b.roles.find(r=>r.i.includes(rol.split('/')[0].trim()))?.n||'';
+      return (lvl[lb]||0)-(lvl[la]||0);
+    });
+    const chosen=candidates[0];
+    if(chosen){
+      used.add(chosen.id);
+      html+=`<div class="suggest-row"><div><div class="suggest-song">${rol}: <strong>${chosen.nombre}</strong></div><div class="suggest-meta">${chosen.roles.find(r=>r.i.includes(rol.split('/')[0].trim()))?.n||''}</div></div>
+      <button class="suggest-use" onclick="applyBandaSuggestion('${rol}','${chosen.nombre}','${chosen.id}')">Usar</button></div>`;
+    } else {
+      html+=`<div class="suggest-row"><div><div class="suggest-song">${rol}: <span style="color:var(--text3)">Secuencia</span></div><div class="suggest-meta">No disponible</div></div></div>`;
+    }
+  });
+  rows.innerHTML=html;
+  if(!inlineBox) box.style.display='block';
 }
+
+function suggestVoces(){
+  const fecha=_mes&&_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  const availVoc=getAvailableMembers('voces',fecha);
+  const inlineBox=document.getElementById('suggest-voces-inline');
+  const box=inlineBox||document.getElementById('suggest-box');
+  const rows=inlineBox?inlineBox:document.getElementById('suggest-rows');
+  if(inlineBox) inlineBox.style.display='block';
+  else { document.getElementById('suggest-box-title').textContent='🎤 Voces sugeridas'; box.style.display='block'; }
+  // Rank by level, suggest líder = most experienced
+  const sorted=[...availVoc].sort((a,b)=>{
+    const lvl={Experto:3,Activo:2,'En formación':1};
+    const la=Math.max(...a.roles.map(r=>lvl[r.n]||0));
+    const lb=Math.max(...b.roles.map(r=>lvl[r.n]||0));
+    return lb-la;
+  });
+  // Alternate líder between David G and Majito based on who has MORE songs
+  const setRows=[...document.querySelectorAll('[data-srow]')];
+  const davidCount=setRows.filter(r=>r.querySelector('[data-sldr]')?.value==='David García').length;
+  const majoCount=setRows.filter(r=>r.querySelector('[data-sldr]')?.value==='Majito (María José)').length;
+  const preferredLdr=majoCount>davidCount?'David García':'Majito (María José)';
+  let html='';
+  sorted.forEach((v,i)=>{
+    const esLider=i===0;
+    const esSuggested=v.nombre===preferredLdr&&i<2;
+    html+=`<div class="suggest-row">
+      <div>
+        <div class="suggest-song">${esLider?'⭐ LÍDER:':''} <strong>${v.nombre}</strong></div>
+        <div class="suggest-meta">${v.roles.map(r=>r.i+' · '+r.n).join(', ')}</div>
+        ${esSuggested?'<div class="suggest-ldr">● Turno como líder de culto</div>':''}
+      </div>
+      <button class="suggest-use" onclick="applyVozSuggestion(${i},'${v.nombre}',${esLider})">Usar</button>
+    </div>`;
+  });
+  rows.innerHTML=html;
+  if(!inlineBox) box.style.display='block';
+  if(rows) rows.innerHTML+=`<button onclick="suggestVocesRandom()" style="width:100%;margin-top:6px;background:rgba(244,205,39,.07);border:1.5px solid rgba(244,205,39,.2);color:var(--yellow);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;text-transform:uppercase">🔀 Otra combinación</button>`;
+}
+
+function suggestBandaRandom(){
+  const fc=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  const allMus=[...getAvailableMembers('musicos',fc),...getAvailableMembers('voces',fc)].sort(()=>Math.random()-.5);
+  const roles=['Batería','Bajo','Piano / Teclado','Guitarra'];
+  const inlineBox=document.getElementById('suggest-banda-inline');
+  const rows=inlineBox||document.getElementById('suggest-rows');
+  if(inlineBox) inlineBox.style.display='block';
+  const used=new Set();
+  let html='';
+  roles.forEach(rol=>{
+    const kw=rol.toLowerCase().split('/')[0].trim();
+    const candidates=allMus.filter(m=>!used.has(m.id)&&m.roles.some(r=>r.i.toLowerCase().includes(kw)));
+    const chosen=candidates[0];
+    if(chosen){
+      used.add(chosen.id);
+      const nivel=chosen.roles.find(r=>r.i.toLowerCase().includes(kw))?.n||'';
+      html+=`<div class="suggest-row"><div><div class="suggest-song">${rol}: <strong>${chosen.nombre}</strong></div><div class="suggest-meta">${nivel}</div></div><button class="suggest-use" onclick="applyBandaSuggestion('${rol}','${chosen.nombre}','${chosen.id}')">Usar</button></div>`;
+    } else {
+      html+=`<div class="suggest-row"><div><div class="suggest-song">${rol}: <span style="color:var(--text3)">Secuencia</span></div></div></div>`;
+    }
+  });
+  if(rows) rows.innerHTML=html+'<button onclick="suggestBandaRandom()" style="width:100%;margin-top:6px;background:rgba(48,218,216,.07);border:1.5px solid rgba(48,218,216,.2);color:var(--teal);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;text-transform:uppercase">🔀 Otra combinación</button>';
+}
+
+function suggestVocesRandom(){
+  const fc=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  const availVoc=getAvailableMembers('voces',fc).sort(()=>Math.random()-.5);
+  const inlineBox=document.getElementById('suggest-voces-inline');
+  const rows=inlineBox||document.getElementById('suggest-rows');
+  if(inlineBox) inlineBox.style.display='block';
+  let html='';
+  availVoc.forEach((v,i)=>{
+    html+=`<div class="suggest-row"><div><div class="suggest-song">${i===0?'⭐ LÍDER: ':''}<strong>${v.nombre}</strong></div><div class="suggest-meta">${v.roles.map(r=>r.i+' · '+r.n).join(', ')}</div></div><button class="suggest-use" onclick="applyVozSuggestion(${i},'${v.nombre}',${i===0})">Usar</button></div>`;
+  });
+  html+='<button onclick="suggestVocesRandom()" style="width:100%;margin-top:6px;background:rgba(244,205,39,.07);border:1.5px solid rgba(244,205,39,.2);color:var(--yellow);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;text-transform:uppercase">🔀 Otra combinación</button>';
+  if(rows) rows.innerHTML=html;
+}
+
+function applyBandaSuggestion(rol, nombre, mid){
+  // Find row with matching rol or add new one
+  const rows=[...document.querySelectorAll('[data-brow]')];
+  const ICONS={'Batería':'🥁','Bajo':'🎸','Piano / Teclado':'🎹','Guitarra':'🎸'};
+  const existing=rows.find(r=>r.querySelector('[data-brol]')?.value===rol);
+  if(existing){
+    const sel=existing.querySelector('[data-bsel]');
+    if(sel){
+      // Add option if not present
+      if(!existing.querySelector(`option[value="${nombre}"]`)){
+        const opt=document.createElement('option');opt.value=nombre;opt.textContent=nombre;sel.appendChild(opt);
+      }
+      sel.value=nombre;
+    }
+  } else {
+    addBRow();
+    const newRow=document.querySelector(`[data-brow]:last-child`);
+    if(newRow){
+      const ico=ICONS[rol]||'🎵';
+      newRow.querySelector('.er-ico').textContent=ico;
+      const brol=newRow.querySelector('[data-brol]');
+      if(brol) brol.value=rol;
+      const bsel=newRow.querySelector('[data-bsel]');
+      if(bsel) bsel.value=nombre;
+    }
+  }
+}
+
+function applyVozSuggestion(idx, nombre, esLider){
+  const rows=[...document.querySelectorAll('[data-vrow]')];
+  if(rows[idx]){
+    const sel=rows[idx].querySelector('[data-vsel]');
+    if(sel){
+      if(!rows[idx].querySelector(`option[value="${nombre}"]`)){
+        const opt=document.createElement('option');opt.value=nombre;opt.textContent=nombre;sel.appendChild(opt);
+      }
+      sel.value=nombre;
+    }
+  }
+}
+
+function runAutoSuggest(){ suggestCanciones(); }
+
 function applyAllSuggestions(){
   const tipos=['Rápida','Intermedia','Ministración','Ofrenda'];
   const cNames=CANCIONES.map(c=>c.nombre);
@@ -1577,25 +1913,63 @@ function applyAllSuggestions(){
   });
   document.getElementById('suggest-box').style.display='none';
 }
+function buildGroupedSongOpts(selected){
+  // Group songs by clasificacion
+  const groups={Rápida:[],Media:[],Lenta:[]};
+  CANCIONES.forEach(c=>{
+    const g=groups[c.clasificacion]||groups['Media'];
+    g.push(c);
+  });
+  let html='<option value="">— elegir —</option>';
+  ['Rápida','Media','Lenta'].forEach(g=>{
+    if(!groups[g].length) return;
+    html+=`<optgroup label="── ${g} ──">`;
+    groups[g].forEach(c=>{
+      html+=`<option value="${c.nombre}" ${c.nombre===selected?'selected':''}>${c.nombre} (${c.tono})</option>`;
+    });
+    html+='</optgroup>';
+  });
+  return html;
+}
+
 function buildSetRow(id,nombre,nota,lider,cNames,vN){
-  let opts=''; cNames.forEach(n=>{ opts+=`<option ${n===nombre?'selected':''}>${n}</option>`; });
+  const opts=buildGroupedSongOpts(nombre);
   let lOpts='<option value="">Sin líder</option>'; vN.forEach(n=>{ lOpts+=`<option ${n===lider?'selected':''}>${n}</option>`; });
-  return `<span class="er-ico" style="font-size:.56rem;width:12px">${id%1000}</span>
-    <select class="er-sel" data-ssel="${id}">${opts}</select>
-    <input class="er-in" data-snota="${id}" value="${nota}" placeholder="Nota" style="width:58px">
-    <select class="er-sel" style="font-size:.6rem;max-width:100px" data-splanb="${id}"><option value="">Sin B</option>${opts}</select>
-    <select class="er-sel" style="font-size:.6rem;max-width:90px;color:var(--teal)" data-sldr="${id}">${lOpts}</select>
+  const planOpts=buildGroupedSongOpts('');
+  return `<span class="er-ico" style="font-size:.56rem;width:12px">♪</span>
+    <select class="er-sel" data-ssel="${id}" onchange="autoAssignLeader(this)">${opts}</select>
+    <input class="er-in" data-snota="${id}" value="${nota||''}" placeholder="Nota" style="width:55px">
+    <select class="er-sel" style="font-size:.6rem;max-width:95px" data-splanb="${id}"><option value="">Sin B</option>${buildGroupedSongOpts('')}</select>
+    <select class="er-sel" style="font-size:.6rem;max-width:88px;color:var(--teal)" data-sldr="${id}">${lOpts}</select>
     <button class="er-del" onclick="this.closest('[data-srow]').remove()">✕</button>`;
+}
+
+// When song changes in panel, auto-suggest leader based on availability + affinity
+function autoAssignLeader(songSel){
+  const row=songSel.closest('[data-srow]');
+  if(!row) return;
+  const ldrSel=row.querySelector('[data-sldr]');
+  if(!ldrSel) return;
+  const nombre=songSel.value;
+  const cd=CANCIONES.find(c=>c.nombre===nombre);
+  if(!cd) return;
+  // Get available voices for this domingo
+  const fecha=_mes&&_idx!=null?(mesObj()?.fechas[_idx]||''):'';
+  const vDisp=vocesDisponibles(fecha.replace(' 2025',''));
+  const suggested=MUSIC_ENGINE.suggestLeader(cd,vDisp);
+  if(suggested && ldrSel.querySelector(`option[value="${suggested}"]`)){
+    ldrSel.value=suggested;
+  }
 }
 
 // ── DOMINGO PANEL ──
 function domBody(d,fecha,esCena){
   const names=allNames();const cNames=CANCIONES.map(c=>c.nombre);const vN=voceNames();
   const tipo=d?d.tipo:esCena?'Cena':'Normal';
+  const fcorta=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
   let bH='';
   (d?d.banda:[]).forEach((b,i)=>{
-    let opts='';[...names,'Secuencia'].forEach(n=>{ opts+=`<option ${n===b.nombre?'selected':''}>${n}</option>`; });
-    bH+=`<div class="er" data-brow="${i}"><span class="er-ico">${b.icon}</span><select class="er-sel" data-bsel="${i}">${opts}</select><input class="er-in" data-brol="${i}" value="${b.rol||''}" placeholder="Rol" style="width:68px"><button class="er-del" onclick="this.closest('[data-brow]').remove()">✕</button></div>`;
+    bH+=buildBandaRow(i, b.icon||'🎵', b.rol||'', b.nombre||'', fcorta);
   });
   let sH='';
   (d?d.canciones:[]).forEach((c,i)=>{
@@ -1603,10 +1977,7 @@ function domBody(d,fecha,esCena){
   });
   const oc=d?.outfit?.color||'#132589',on=d?.outfit?.nombre||'';
   return buildSuggestBox()+`
-    <div class="ai-row" style="margin-bottom:7px">
-      <span class="ai-txt">🎯 Sugerir setlist automáticamente</span>
-      <button class="ai-btn suggest" onclick="runAutoSuggest()">Sugerir</button>
-    </div>
+
     <div class="ps"><div class="ps-t">Servicio</div>
       <div class="fr"><label class="fl">Tema del domingo</label><input class="fi" id="e-tema" value="${d?.tema||''}"></div>
       <div class="fr"><label class="fl">Lectura bíblica</label><input class="fi" id="e-lectura" value="${d?.lectura||''}"></div>
@@ -1624,15 +1995,21 @@ function domBody(d,fecha,esCena){
     </div>
     <div class="ps"><div class="ps-t">⭐ Voces del servicio</div>
       <p style="font-size:.58rem;color:var(--text3);margin-bottom:7px">La primera (⭐) es quien dirige el culto — se resalta en amarillo</p>
-      <div id="voces-rows">${buildVocesPanel(d?.voces)}</div>
+      <div id="voces-rows">${buildVocesPanel(d?.voces, _idx!=null?(mesObj()?.fechas[_idx]||"").replace(" 2025",""):"")}</div>
+      <button onclick="suggestVoces()" style="width:100%;margin-top:5px;background:rgba(244,205,39,.1);border:1.5px solid rgba(244,205,39,.25);color:var(--yellow);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase">🎤 Sugerir voces disponibles</button>
+      <div id="suggest-voces-inline" style="display:none;margin-top:6px"></div>
     </div>
     <div class="ps"><div class="ps-t">Banda <span style="font-size:.54rem;color:var(--text3);font-weight:400">— usa "Secuencia" si falta un instrumento</span></div>
       <div class="edit-rows" id="banda-rows">${bH}</div>
       <button class="add-row" onclick="addBRow()">+ Músico / Secuencia</button>
+      <button onclick="suggestBanda()" style="width:100%;margin-top:5px;background:rgba(48,218,216,.07);border:1.5px solid rgba(48,218,216,.2);color:var(--teal);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase">🥁 Sugerir banda disponible</button>
+      <div id="suggest-banda-inline" style="display:none;margin-top:6px"></div>
     </div>
     <div class="ps"><div class="ps-t">Setlist · Plan A / Plan B · Líder</div>
       <div class="edit-rows" id="set-rows">${sH}</div>
       <button class="add-row" onclick="addSRow()">+ Canción</button>
+      <button onclick="suggestCanciones()" style="width:100%;margin-top:5px;background:rgba(135,64,191,.07);border:1.5px solid rgba(135,64,191,.2);color:var(--purple);border-radius:6px;padding:5px;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase">🎵 Sugerir canciones</button>
+      <div id="suggest-canc-inline" style="display:none;margin-top:6px"></div>
     </div>
     ${d?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12px"><button class="btn-d" onclick="deleteDomingo()">Eliminar domingo</button></div>`:''}`;
 }
@@ -1659,14 +2036,44 @@ function buildDom(fecha,tipo){
   });
   return{id:'d'+Date.now(),fecha,tipo:document.getElementById('e-tipo').value,tema:document.getElementById('e-tema').value,lectura:document.getElementById('e-lectura').value,horario:{servicio:document.getElementById('e-hora-serv')?.value||'9:00 am',llegada:document.getElementById('e-hora-llg')?.value||'8:15 am'},outfit:{color:document.getElementById('e-color').value,nombre:document.getElementById('e-outfit').value},flujo:document.getElementById('e-flujo').value.split(',').map(s=>s.trim()).filter(Boolean),voces,banda,canciones,score:75};
 }
-function saveDomingo(){const d=DOMINGOS[_mes][_idx];const b=buildDom(d.fecha,d.tipo);b.id=d.id;b.score=d.score;DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();fbSave();}
+function saveDomingo(){
+  const d=DOMINGOS[_mes][_idx];
+  const b=buildDom(d.fecha,d.tipo);
+  b.id=d.id;b.score=d.score;
+  // Auto-assign leaders based on voz líder rotation
+  const vozLider=b.voces?.find(v=>v.dirige&&v.nombre)?.nombre||'';
+  if(vozLider && b.canciones){
+    // Count songs per leader across all domingos this month
+    const davidCount=DOMINGOS[activeMes].reduce((acc,dom)=>{
+      if(!dom) return acc;
+      return acc + (dom.canciones||[]).filter(c=>c.lider==='David García').length;
+    },0);
+    const majoCount=DOMINGOS[activeMes].reduce((acc,dom)=>{
+      if(!dom) return acc;
+      return acc + (dom.canciones||[]).filter(c=>c.lider==='Majito (María José)').length;
+    },0);
+    // Assign leaders: alternate based on monthly count balance
+    const available=b.voces.filter(v=>v.nombre).map(v=>v.nombre);
+    if(available.length>0){
+      b.canciones.forEach((c,i)=>{
+        if(!c.lider||c.lider===''){
+          // Assign to least-used available voice
+          c.lider=available[i%available.length];
+        }
+      });
+    }
+  }
+  DOMINGOS[_mes][_idx]=b;
+  closePanel();renderDomingos();fbSave();
+}
 function saveNuevoDomingo(){const m=mesObj();const f=m.fechas[_idx];const b=buildDom(f+' 2025',m.cena===_idx?'Cena':'Normal');DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();fbSave();}
 function deleteDomingo(){if(!confirm('¿Eliminar?'))return;DOMINGOS[_mes][_idx]=null;closePanel();renderDomingos();fbSave();}
 
 function addBRow(){
-  const id=_bI++;const names=allNames();const div=document.createElement('div');div.className='er';div.dataset.brow=id;
-  let opts='';[...names,'Secuencia'].forEach(n=>{ opts+=`<option>${n}</option>`; });
-  div.innerHTML=`<span class="er-ico">🎵</span><select class="er-sel" data-bsel="${id}">${opts}</select><input class="er-in" data-brol="${id}" value="" placeholder="Rol" style="width:68px"><button class="er-del" onclick="this.closest('[data-brow]').remove()">✕</button>`;
+  const id=_bI++;
+  const fc=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
+  const div=document.createElement('div');div.className='er';div.dataset.brow=id;
+  div.innerHTML=buildBandaRow(id,'🎵','','',fc);
   document.getElementById('banda-rows').appendChild(div);
 }
 function addSRow(){
@@ -1784,7 +2191,11 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',dark?'light':'dark');
   document.getElementById('theme-btn').textContent=dark?'🌙':'☀️';
 }
-function renderAll(){renderMonthNav();renderDomingos();renderEnsayos();renderCanciones();renderEquipo();}
+function renderAll(){
+  renderMonthNav();renderDomingos();renderEnsayos();renderCanciones();renderEquipo();
+  const sc=document.getElementById('stat-c');
+  if(sc) sc.textContent=CANCIONES.length;
+}
 
 // ═══════════════════════════ INIT ═══════════════════════════
 function startApp() {
@@ -1803,7 +2214,9 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', startApp);
 } else {
   startApp();
-}
+}function contrastColor(h){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return(r*299+g*587+b*114)/1000>128?'#000':'#fff';}
+
+
 </script>
 </body>
 </html>
