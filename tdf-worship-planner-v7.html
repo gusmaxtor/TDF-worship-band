@@ -411,6 +411,9 @@ main{padding:12px 16px}
   .crono-col:first-child{border-right:none;border-bottom:1px solid var(--border)}
 }
 </style>
+  <!-- Firebase compat (no modules needed) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <header>
@@ -520,6 +523,7 @@ main{padding:12px 16px}
   <div class="pb" id="pb"></div>
   <div class="pf"><button class="btn-c" onclick="closePanel()">Cancelar</button><button class="btn-s" id="btn-s" onclick="savePanel()">Guardar</button></div>
 </div>
+
 <script>
 // ═══════════════════════════════════════════════════════
 // MUSIC ENGINE — círculo de quintas, transiciones, sugerencias
@@ -747,13 +751,87 @@ window.MUSIC_ENGINE={
   buildLocalTransition,pivotChords,transitionTech,
   suggestSetlist,suggestLeader,buildUsageHistory,toneDistance,normTone
 };
-</script>
 
-
-<script>
-// ═══════════════════════════ CONFIG ═══════════════════════════
 let GEMINI_KEY = localStorage.getItem('tdf_gk')||'';
 const LDR_COLORS = ['#30dad8','#f4cd27','#ff004b','#8740bf','#4CAF50','#FF9800','#E91E63','#00BCD4'];
+
+
+
+// ═══════════════════════════ FIREBASE (loaded via CDN scripts in head) ═══════════════════════════
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB-0N7A4qJSkiVeqW_qg1nXnKInO8t2L2I",
+  authDomain: "tdf-worship-planner.firebaseapp.com",
+  projectId: "tdf-worship-planner",
+  storageBucket: "tdf-worship-planner.firebasestorage.app",
+  messagingSenderId: "393737596300",
+  appId: "1:393737596300:web:8d5d49ec13afa3cf54baa9"
+};
+
+let db = null;
+function initFirebase() {
+  try {
+    const fbApp = firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    console.log('Firebase ready');
+  } catch(e) {
+    // Already initialized
+    db = firebase.firestore();
+  }
+}
+
+// Load all data from Firestore on startup
+async function fbLoad() {
+  try {
+    initFirebase();
+    const snap = await db.collection('tdf').doc('data').get();
+    if (snap.exists()) {
+      const d = snap.data();
+      if (d.DOMINGOS)  Object.assign(DOMINGOS, d.DOMINGOS);
+      if (d.EQUIPO)    Object.assign(EQUIPO, d.EQUIPO);
+      if (d.CANCIONES) { CANCIONES.length=0; CANCIONES.push(...d.CANCIONES); }
+      if (d.ENSAYOS)   { ENSAYOS.length=0;   ENSAYOS.push(...d.ENSAYOS); }
+      console.log('✓ Datos cargados desde Firebase');
+    } else {
+      console.log('Firebase vacío — usando datos locales');
+    }
+  } catch(err) {
+    console.warn('Firebase load error:', err.message);
+  }
+  renderAll();
+  renderCronograma();
+}
+
+// Save all data to Firestore (editors only)
+async function fbSave() {
+  if (!isEditor) return;
+  try {
+    await db.collection('tdf').doc('data').set({
+      DOMINGOS: JSON.parse(JSON.stringify(DOMINGOS)),
+      EQUIPO:   JSON.parse(JSON.stringify(EQUIPO)),
+      CANCIONES: JSON.parse(JSON.stringify(CANCIONES)),
+      ENSAYOS:   JSON.parse(JSON.stringify(ENSAYOS)),
+      updatedAt: new Date().toISOString()
+    });
+    showSaveToast();
+  } catch(err) {
+    console.warn('Firebase save error:', err.message);
+    alert('Error al guardar: ' + err.message);
+  }
+}
+
+function showSaveToast() {
+  let t = document.getElementById('save-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'save-toast';
+    t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#132589;color:#fff;padding:8px 18px;border-radius:20px;font-size:.72rem;font-weight:700;z-index:999;opacity:0;transition:opacity .3s;font-family:Poppins,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+    document.body.appendChild(t);
+  }
+  t.textContent = '✓ Guardado en la nube';
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2200);
+}
 
 // ═══════════════════════════ AUTH ═══════════════════════════
 // Two editor PINs (Dani + Jhonatan) — change these
@@ -801,7 +879,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   const k=document.getElementById('gemini-key');
   if(k&&GEMINI_KEY) k.value=GEMINI_KEY;
   document.body.classList.add('viewer-mode');
-  renderCronograma();
 });
 
 // ═══════════════════════════ CRONOGRAMA ═══════════════════════════
@@ -811,7 +888,7 @@ const CRONOGRAMA = {
     {hora:'6:40 pm',act:'Devocional y oración'},
     {hora:'7:00 pm',act:'Separación de voces + afinación'},
     {hora:'7:30 pm',act:'Ensayo de transiciones y ensamble'},
-    {hora:'8:20 pm',act:'Oración final y cierre'},
+    {hora:'8:20 pm',act:'Oración final y cierre'}
   ],
   culto:[
     {hora:'8:15 am',act:'Llegada equipo (límite 8:25 am)'},
@@ -820,7 +897,7 @@ const CRONOGRAMA = {
     {hora:'8:45 am',act:'Lectura bíblica'},
     {hora:'9:00 am',act:'Inicio culto y alabanza'},
     {hora:'9:50 am',act:'Prédica y enseñanza'},
-    {hora:'10:55 am',act:'Ministración final'},
+    {hora:'10:55 am',act:'Ministración final'}
   ]
 };
 function renderCronograma(){
@@ -832,35 +909,46 @@ function renderCronograma(){
 }
 
 // ═══════════════════════════ DATA ═══════════════════════════
-const MESES=[
+
+const MESES = [
   {id:'jun',label:'Jun 2025',full:'Junio 2025',fechas:['7 Jun','14 Jun','21 Jun','28 Jun'],cena:0},
   {id:'jul',label:'Jul 2025',full:'Julio 2025',fechas:['6 Jul','13 Jul','20 Jul','27 Jul'],cena:3},
   {id:'ago',label:'Ago 2025',full:'Agosto 2025',fechas:['3 Ago','10 Ago','17 Ago','24 Ago'],cena:0},
-  {id:'sep',label:'Sep 2025',full:'Septiembre 2025',fechas:['7 Sep','14 Sep','21 Sep','28 Sep'],cena:3},
+  {id:'sep',label:'Sep 2025',full:'Septiembre 2025',fechas:['7 Sep','14 Sep','21 Sep','28 Sep'],cena:3}
 ];
-let activeMes='jun';
-const mesObj=()=>MESES.find(m=>m.id===activeMes);
+let activeMes = 'jun';
+const mesObj = () => MESES.find(m => m.id === activeMes);
 
+let DOMINGOS = {
+  jun: [
+    {id:'j1',fecha:'7 Jun 2025',tipo:'Cena',tema:'La Mesa del Señor',lectura:'1 Corintios 11:23-26',horario:{servicio:'9:00 am',llegada:'8:00 am'},outfit:{color:'#132589',nombre:'Azul marino'},flujo:['Adoración','Reverencia','Comunión'],banda:[{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🥁',nombre:'Dani García',rol:'Batería'},{icon:'🎸',nombre:'Secuencia',rol:'Bajo'}],voces:[{nombre:'Majito (María José)',rol:'Voz Líder',dirige:true},{nombre:'David García',rol:'Voz',dirige:false},{nombre:'Camilo Puentes',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],canciones:[{nombre:'Que se Llene Tu Casa',nota:'Rápida',energia:'Alta',planb:'',lider:'Majito (María José)'},{nombre:'Solo Hay Uno',nota:'Intermedia',energia:'Media',planb:'',lider:'David García'},{nombre:'Ven y Lléname',nota:'Ministración',energia:'Baja',planb:'',lider:'Majito (María José)'},{nombre:'Lo Único que Quiero',nota:'Ofrenda',energia:'Baja',planb:'',lider:''},{nombre:'Dios Ha Sido Bueno',nota:'Cena',energia:'Baja',planb:'',lider:''}],score:88},
+    {id:'j2',fecha:'14 Jun 2025',tipo:'Normal',tema:'Fe que Mueve Montañas',lectura:'Marcos 11:22-24',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#8740bf',nombre:'Morado'},flujo:['Celebración','Gratitud','Fe'],banda:[{icon:'🥁',nombre:'Jason',rol:'Batería'},{icon:'🎹',nombre:'Carolina',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🎸',nombre:'Secuencia',rol:'Bajo'}],voces:[{nombre:'David García',rol:'Voz Líder',dirige:true},{nombre:'Juan David Moreno',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],canciones:[{nombre:'Nada es Imposible',nota:'Rápida',energia:'Alta',planb:'Todopoderoso',lider:'David García'},{nombre:'Eres Fiel',nota:'Intermedia',energia:'Media',planb:'Único Dios',lider:'Juan David Moreno'},{nombre:'Buen Buen Padre',nota:'Ministración',energia:'Baja',planb:'Amor Como Fuego',lider:'Juan David Moreno'},{nombre:'Todo Lo Haces Bien',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],score:80},
+    {id:'j3',fecha:'21 Jun 2025',tipo:'Normal',tema:'Rendición Total',lectura:'Romanos 12:1-2',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#30dad8',nombre:'Turquesa'},flujo:['Celebración','Adoración','Rendición'],banda:[{icon:'🥁',nombre:'Jason',rol:'Batería'},{icon:'🎸',nombre:'Miguel Méndez',rol:'Bajo'},{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'}],voces:[{nombre:'Juan David Moreno',rol:'Voz Líder',dirige:true},{nombre:'Miguel Méndez',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],canciones:[{nombre:'Decimos Amén',nota:'Rápida',energia:'Alta',planb:'Praise',lider:'David García'},{nombre:'Único Dios',nota:'Intermedia',energia:'Media',planb:'Solo Hay Uno',lider:'Miguel Méndez'},{nombre:'Amor Como Fuego',nota:'Ministración',energia:'Baja',planb:'Siempre que me Mires',lider:'Juan David Moreno'},{nombre:'Siempre que me Mires',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],score:77},
+    {id:'j4',fecha:'28 Jun 2025',tipo:'Normal',tema:'El Gozo del Señor es mi Fuerza',lectura:'Nehemías 8:10',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#f4cd27',nombre:'Amarillo dorado'},flujo:['Gozo','Gratitud','Adoración'],banda:[{icon:'🥁',nombre:'Daniel García',rol:'Batería'},{icon:'🎸',nombre:'David Méndez',rol:'Bajo'},{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'David García',rol:'Guitarra'}],voces:[{nombre:'David García',rol:'Voz Líder',dirige:true},{nombre:'Miguel Méndez',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],canciones:[{nombre:'Vamos a Cantar',nota:'Rápida',energia:'Alta',planb:'Nada es Imposible',lider:'David García'},{nombre:'Todopoderoso',nota:'Intermedia',energia:'Alta',planb:'Praise',lider:'David García'},{nombre:'Yo Te Amo',nota:'Ministración',energia:'Media',planb:'Buen Buen Padre',lider:'Miguel Méndez'},{nombre:'Solo Hay Uno',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],score:83}
+  ],
+  jul: [null,null,null,null],
+  ago: [null,null,null,null],
+  sep: [null,null,null,null]
+};
 let EQUIPO={
   voces:[
-    {id:'v1',nombre:'David García',registro:'tenor',artistasAfines:['Elevation','Lakewood'],cancionesAfines:['Praise','Decimos Amén','Nada es Imposible','Hay Algo Nuevo','Todopoderoso','Vamos a Cantar'],roles:[{i:'Voz principal',n:'Experto'},{i:'Guitarra eléctrica',n:'Activo'}],disp:{jun:['1 Jun','8 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'v1',nombre:'David García',registro:'tenor',artistasAfines:['Elevation','Lakewood'],cancionesAfines:['Praise','Decimos Amén','Nada es Imposible','Hay Algo Nuevo','Todopoderoso','Vamos a Cantar'],roles:[{i:'Voz principal',n:'Experto'},{i:'Guitarra eléctrica',n:'Activo'}],disp:{jun:['7 Jun','14 Jun','28 Jun'],jul:null,ago:null,sep:null}},
     {id:'v2',nombre:'Majito (María José)',registro:'soprano',artistasAfines:['Hillsong','Bethel'],cancionesAfines:['Buen Buen Padre','Ven y Lléname','Constante Amor','Amor Como Fuego','Como en el Cielo'],roles:[{i:'Voz principal',n:'Experto'}],disp:{jun:null,jul:null,ago:null,sep:null}},
-    {id:'v3',nombre:'Miguel Méndez',registro:'barítono',artistasAfines:['Marcos Witt','Marco Barrientos'],cancionesAfines:['Glorioso','Único Dios','Solo Hay Uno','Yo Te Amo','Eres Fiel'],roles:[{i:'Voz',n:'Activo'},{i:'Bajo',n:'Activo'}],disp:{jun:['1 Jun','15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
-    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta un Corazón','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['8 Jun','15 Jun'],jul:null,ago:null,sep:null}},
+    {id:'v3',nombre:'Miguel Méndez',registro:'barítono',artistasAfines:['Marcos Witt','Marco Barrientos'],cancionesAfines:['Glorioso','Único Dios','Solo Hay Uno','Yo Te Amo','Eres Fiel'],roles:[{i:'Voz',n:'Activo'},{i:'Bajo',n:'Activo'}],disp:{jun:['7 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
+    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta un Corazón','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['14 Jun','21 Jun'],jul:null,ago:null,sep:null}}
   ],
   musicos:[
     {id:'v6',nombre:'Alejandro Lizarazo',registro:'',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
   {id:'v5',nombre:'Camilo Puentes',registro:'tenor',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:['7 Jun'],jul:null,ago:null,sep:null}},
-  {id:'m1',nombre:'Daniel García',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Experto'}],disp:{jun:['1 Jun','8 Jun','15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
-    {id:'m2',nombre:'Jason',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Activo'}],disp:{jun:['8 Jun','15 Jun'],jul:null,ago:null,sep:null}},
+  {id:'m1',nombre:'Daniel García',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Experto'}],disp:{jun:['7 Jun','14 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m2',nombre:'Jason',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Activo'}],disp:{jun:['14 Jun','21 Jun'],jul:null,ago:null,sep:null}},
     {id:'m3',nombre:'Johan Sebastián',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Guitarra',n:'Activo'},{i:'Piano / Teclado',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
-    {id:'m4',nombre:'David Méndez',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Bajo',n:'Activo'}],disp:{jun:['1 Jun','22 Jun'],jul:null,ago:null,sep:null}},
-    {id:'m5',nombre:'Carolina',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'}],disp:{jun:['1 Jun','8 Jun'],jul:null,ago:null,sep:null}},
-    {id:'m6',nombre:'Ruth',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'}],disp:{jun:['15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
-    {id:'m7',nombre:'Jhonatan Pardo',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'},{i:'Guitarra',n:'Experto'}],disp:{jun:['1 Jun','8 Jun','15 Jun','22 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m4',nombre:'David Méndez',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Bajo',n:'Activo'}],disp:{jun:['7 Jun','28 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m5',nombre:'Carolina',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'}],disp:{jun:['7 Jun','14 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m6',nombre:'Ruth',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'}],disp:{jun:['21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
+    {id:'m7',nombre:'Jhonatan Pardo',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Piano / Teclado',n:'Activo'},{i:'Guitarra',n:'Experto'}],disp:{jun:['7 Jun','14 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}}
   ]
 };
-
 let CANCIONES=[
   {id:'c01',nombre:'Praise',artista:'Elevation Worship',tono:'D',bpm:130,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Alabanza / Celebración',nuevo:false,recursos:{multitrack:true,secuencia:true,pads:false,click:true},version:'https://www.youtube.com/results?search_query=Praise+Elevation+Worship+español',partitura:'',secuencias:''},
   {id:'c02',nombre:'Constante Amor',artista:'',tono:'A',bpm:76,energia:'Baja',clasificacion:'Rápida',dificultad:'Fácil',tema:'Amor y Fidelidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1aUwdl-4q9R3_L-DDglDvrrIRxCtoB43r/view',secuencias:''},
@@ -886,31 +974,18 @@ let CANCIONES=[
   {id:'c23',nombre:'Que se Llene Tu Casa',artista:'Ingrid Rosario',tono:'Eb',bpm:132,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Presencia de Dios / Invocación',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:false},version:'https://www.youtube.com/results?search_query=Que+se+llene+tu+casa+Elevation+Worship+español',partitura:'',secuencias:''},
   {id:'c24',nombre:'Lo Único que Quiero',artista:'Marcela Gandara',tono:'F#',bpm:72,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Rendición y Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'',secuencias:''},
   {id:'c25',nombre:'Dios Ha Sido Bueno',artista:'Marcos Witt',tono:'F',bpm:75,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Fidelidad y Bondad de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:false},version:'',partitura:'https://drive.google.com/file/d/1UEiRiK9_AU1QkQwe5mqkyXMhGLhtFhvz/view',secuencias:''},
-  {id:'c22',nombre:'Como en el Cielo',artista:'Elevation Worship',tono:'G',bpm:88,energia:'Media',clasificacion:'Media',dificultad:'Difícil',tema:'Reino de Dios / Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:false},version:'https://www.youtube.com/results?search_query=Como+en+el+cielo+Elevation+Worship+español',partitura:'',secuencias:''},
+  {id:'c22',nombre:'Como en el Cielo',artista:'Elevation Worship',tono:'G',bpm:88,energia:'Media',clasificacion:'Media',dificultad:'Difícil',tema:'Reino de Dios / Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:false},version:'https://www.youtube.com/results?search_query=Como+en+el+cielo+Elevation+Worship+español',partitura:'',secuencias:''}
 ];
-
-let DOMINGOS={
-  jun:[
-    {id:'j1',fecha:'7 Jun 2025',tipo:'Cena',tema:'La Mesa del Señor',lectura:'1 Corintios 11:23–26',horario:{servicio:'9:00 am',llegada:'8:00 am'},outfit:{color:'#132589',nombre:''},flujo:['Adoración','Reverencia','Comunión'],banda:[{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🥁',nombre:'Dani García',rol:'Batería'},{icon:'🎸',nombre:'Secuencia',rol:'Bajo'}],canciones:[{nombre:'Que se Llene Tu Casa',nota:'Rápida',energia:'Alta',planb:'',lider:'Majito',vozLider:false},{nombre:'Solo Hay Uno',nota:'Intermedia',energia:'Media',planb:'',lider:'David García',vozLider:false},{nombre:'Ven y Lléname',nota:'Ministración',energia:'Baja',planb:'',lider:'Majito',vozLider:false},{nombre:'Lo Único que Quiero',nota:'Ofrenda',energia:'Baja',planb:'',lider:'',vozLider:false},{nombre:'Dios Ha Sido Bueno',nota:'Cena',energia:'Baja',planb:'',lider:'',vozLider:false}],voces:[{nombre:'Majito (María José)',rol:'Voz Líder',dirige:true},{nombre:'David García',rol:'Voz',dirige:false},{nombre:'Camilo',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:88},
-    {id:'j2',fecha:'14 Jun 2025',tipo:'Normal',tema:'Fe que Mueve Montañas',lectura:'Marcos 11:22–24',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#8740bf',nombre:'Morado'},flujo:['Celebración','Gratitud','Fe'],banda:[{icon:'🥁',nombre:'Jason',rol:'Batería'},{icon:'🎹',nombre:'Carolina',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🎤',nombre:'David García',rol:'Voz'},{icon:'🎤',nombre:'Juan David Moreno',rol:'Voz / Guitarra'}],canciones:[{nombre:'Nada es Imposible',nota:'Rápida',energia:'Alta',planb:'Todopoderoso',lider:'David García'},{nombre:'Eres Fiel',nota:'Intermedia',energia:'Media',planb:'Único Dios',lider:'Juan Moreno'},{nombre:'Buen Buen Padre',nota:'Ministración',energia:'Baja',planb:'Amor Como Fuego',lider:'Juan Moreno'},{nombre:'Todo lo Haces Bien',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],voces:[{nombre:'David García',rol:'Voz Líder',dirige:true},{nombre:'Juan David Moreno',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:80,
-    {id:'j3',fecha:'21 Jun 2025',tipo:'Normal',tema:'Rendición Total',lectura:'Romanos 12:1–2',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#30dad8',nombre:'Turquesa'},flujo:['Celebración','Adoración','Rendición'],banda:[{icon:'🥁',nombre:'Jason',rol:'Batería'},{icon:'🎸',nombre:'Miguel Méndez',rol:'Bajo'},{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'Jhonatan Pardo',rol:'Guitarra'},{icon:'🎤',nombre:'Miguel Méndez',rol:'Voz'},{icon:'🎤',nombre:'Juan David Moreno',rol:'Voz'}],canciones:[{nombre:'Decimos Amén',nota:'Rápida',energia:'Alta',planb:'Praise',lider:'David García'},{nombre:'Único Dios',nota:'Intermedia',energia:'Media',planb:'Solo Hay Uno',lider:'Miguel Méndez'},{nombre:'Amor Como Fuego',nota:'Ministración',energia:'Baja',planb:'Siempre que me Mires',lider:'Juan Moreno'},{nombre:'Siempre que me Mires',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],voces:[{nombre:'Juan David Moreno',rol:'Voz Líder',dirige:true},{nombre:'Miguel Méndez',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:77,
-    {id:'j4',fecha:'28 Jun 2025',tipo:'Normal',tema:'El Gozo del Señor es mi Fuerza',lectura:'Nehemías 8:10',horario:{servicio:'9:00 am',llegada:'8:15 am'},outfit:{color:'#f4cd27',nombre:'Amarillo dorado'},flujo:['Gozo','Gratitud','Adoración'],banda:[{icon:'🥁',nombre:'Daniel García',rol:'Batería'},{icon:'🎸',nombre:'David Méndez',rol:'Bajo'},{icon:'🎹',nombre:'Ruth',rol:'Piano'},{icon:'🎸',nombre:'David García',rol:'Guitarra'},{icon:'🎤',nombre:'David García',rol:'Voz'},{icon:'🎤',nombre:'Miguel Méndez',rol:'Voz'}],canciones:[{nombre:'Vamos a Cantar',nota:'Rápida',energia:'Alta',planb:'Nada es Imposible',lider:'David García'},{nombre:'Todopoderoso',nota:'Intermedia',energia:'Alta',planb:'Praise',lider:'David García'},{nombre:'Yo Te Amo',nota:'Ministración',energia:'Media',planb:'Buen Buen Padre',lider:'Miguel Méndez'},{nombre:'Solo Hay Uno',nota:'Ofrenda',energia:'Media',planb:'',lider:''}],voces:[{nombre:'David García',rol:'Voz Líder',dirige:true},{nombre:'Miguel Méndez',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false},{nombre:'',rol:'Voz',dirige:false}],score:83,
-  ],
-  jul:[null,null,null,null],
-  ago:[null,null,null,null],
-  sep:[null,null,null,null],
-};
-
 let ENSAYOS=[
   {id:'e1',fecha:'Sáb 7 Jun',titulo:'Ensayo general — Junio',notas:'Primera lectura de Hay Algo Nuevo sin presión.',songs_nuevas:['Hay Algo Nuevo'],songs_refuerzo:['Glorioso','Amor Como Fuego','Nada es Imposible'],transiciones:{}},
   {id:'e2',fecha:'Sáb 14 Jun',titulo:'Ensayo general — Junio (2)',notas:'Consolidar Hay Algo Nuevo. Intro de Como en el Cielo solo guitarras y voces.',songs_nuevas:['Como en el Cielo'],songs_refuerzo:['Hay Algo Nuevo','Decimos Amén','Vamos a Cantar'],transiciones:{}},
-  {id:'e3',fecha:'Sáb 5 Jul',titulo:'Ensayo general — Julio',notas:'Como en el Cielo con banda completa. Objetivo: lista para julio.',songs_nuevas:[],songs_refuerzo:['Como en el Cielo','Praise','Único Dios','Eres Fiel'],transiciones:{}},
+  {id:'e3',fecha:'Sáb 5 Jul',titulo:'Ensayo general — Julio',notas:'Como en el Cielo con banda completa. Objetivo: lista para julio.',songs_nuevas:[],songs_refuerzo:['Como en el Cielo','Praise','Único Dios','Eres Fiel'],transiciones:{}}
 ];
 const RUTA_NUEVAS=[
   {cancion:'Hay Algo Nuevo',fase:'Nueva',desc:'Lectura Jun 7 · Banda Jun 14 · Activa Jul',dot:'rd-n',ph:'rp-n'},
   {cancion:'Como en el Cielo',fase:'Nueva',desc:'Guitarras Jun 14 · Banda Jul 5 · Activa Ago',dot:'rd-n',ph:'rp-n'},
   {cancion:'(Por definir)',fase:'Introducción',desc:'Candidata Agosto',dot:'rd-i',ph:'rp-i'},
-  {cancion:'(Por definir)',fase:'Activa Sep',desc:'Consolidar Septiembre',dot:'rd-a',ph:'rp-a'},
+  {cancion:'(Por definir)',fase:'Activa Sep',desc:'Consolidar Septiembre',dot:'rd-a',ph:'rp-a'}
 ];
 
 // ═══════════════════════════ HELPERS ═══════════════════════════
@@ -919,8 +994,6 @@ const lpC=n=>n==='Experto'?'lp-e':n==='Activo'?'lp-a':'lp-f';
 const allNames=()=>[...EQUIPO.voces,...EQUIPO.musicos].map(m=>m.nombre);
 const voceNames=()=>EQUIPO.voces.map(m=>m.nombre);
 const songData=n=>CANCIONES.find(c=>c.nombre===n);
-const mesObj=()=>MESES.find(m=>m.id===activeMes);
-let activeMes='jun';
 
 function ldrColor(name){
   const all=[...EQUIPO.voces,...EQUIPO.musicos];
@@ -1235,9 +1308,9 @@ function saveTransicion(){
     acordes:document.getElementById('tr-acordes').value,
     tecnica:document.getElementById('tr-tecnica').value,
     tempo:document.getElementById('tr-tempo').value,
-    palabras:document.getElementById('tr-palabras').value,
+    palabras:document.getElementById('tr-palabras').value
   };
-  closePanel();renderEnsayos();
+  closePanel();renderEnsayos();fbSave();
 }
 
 // ═══════════════════════════ RENDER EQUIPO ═══════════════════════════
@@ -1320,7 +1393,7 @@ function saveInline(id,field,val){
   const c=CANCIONES.find(x=>x.id===id);if(!c)return;
   c[field]=field==='bpm'?parseInt(val)||c.bpm:val;
   const s=document.getElementById('saved-'+id);
-  if(s){s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1800);}
+  if(s){s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1800);}fbSave();
 }
 function editTono(id){
   if(!isEditor) return;
@@ -1366,7 +1439,7 @@ function buildVocesPanel(currentVoces){
     {nombre:'',rol:'Voz',dirige:false},
     {nombre:'',rol:'Voz',dirige:false},
     {nombre:'',rol:'Voz',dirige:false},
-    {nombre:'',rol:'Voz',dirige:false},
+    {nombre:'',rol:'Voz',dirige:false}
   ];
   const vList=currentVoces||defaults;
   const vN=voceNames();
@@ -1511,12 +1584,12 @@ function buildDom(fecha,tipo){
   const voces=[...document.querySelectorAll('[data-vrow]')].map(r=>({
     nombre:r.querySelector('[data-vsel]').value,
     rol:r.classList.contains('is-lider')?'Voz Líder':'Voz',
-    dirige:r.classList.contains('is-lider'),
+    dirige:r.classList.contains('is-lider')
   }));
   const banda=[...document.querySelectorAll('[data-brow]')].map(r=>({
     icon:r.querySelector('.er-ico').textContent,
     nombre:r.querySelector('[data-bsel]').value,
-    rol:r.querySelector('[data-brol]').value,
+    rol:r.querySelector('[data-brol]').value
   }));
   const canciones=[...document.querySelectorAll('[data-srow]')].map(r=>{
     const n=r.querySelector('[data-ssel]').value;
@@ -1525,9 +1598,9 @@ function buildDom(fecha,tipo){
   });
   return{id:'d'+Date.now(),fecha,tipo:document.getElementById('e-tipo').value,tema:document.getElementById('e-tema').value,lectura:document.getElementById('e-lectura').value,horario:{servicio:document.getElementById('e-hora-serv')?.value||'9:00 am',llegada:document.getElementById('e-hora-llg')?.value||'8:15 am'},outfit:{color:document.getElementById('e-color').value,nombre:document.getElementById('e-outfit').value},flujo:document.getElementById('e-flujo').value.split(',').map(s=>s.trim()).filter(Boolean),voces,banda,canciones,score:75};
 }
-function saveDomingo(){const d=DOMINGOS[_mes][_idx];const b=buildDom(d.fecha,d.tipo);b.id=d.id;b.score=d.score;DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();}
-function saveNuevoDomingo(){const m=mesObj();const f=m.fechas[_idx];const b=buildDom(f+' 2025',m.cena===_idx?'Cena':'Normal');DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();}
-function deleteDomingo(){if(!confirm('¿Eliminar?'))return;DOMINGOS[_mes][_idx]=null;closePanel();renderDomingos();}
+function saveDomingo(){const d=DOMINGOS[_mes][_idx];const b=buildDom(d.fecha,d.tipo);b.id=d.id;b.score=d.score;DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();fbSave();}
+function saveNuevoDomingo(){const m=mesObj();const f=m.fechas[_idx];const b=buildDom(f+' 2025',m.cena===_idx?'Cena':'Normal');DOMINGOS[_mes][_idx]=b;closePanel();renderDomingos();fbSave();}
+function deleteDomingo(){if(!confirm('¿Eliminar?'))return;DOMINGOS[_mes][_idx]=null;closePanel();renderDomingos();fbSave();}
 
 function addBRow(){
   const id=_bI++;const names=allNames();const div=document.createElement('div');div.className='er';div.dataset.brow=id;
@@ -1568,9 +1641,9 @@ function miembroBody(m,isNew){
 function openMiembro(id){_mode='miembro';_id=id;const m=[...EQUIPO.voces,...EQUIPO.musicos].find(x=>x.id===id);openPanel(`Editar · ${m.nombre}`,[...EQUIPO.voces].some(x=>x.id===id)?'Voz':'Músico',miembroBody(m,false));}
 function openNuevoMiembro(g){_mode='nuevo-miembro';_grupo=g;openPanel('Nuevo miembro',g==='voces'?'Voz':'Músico',miembroBody(null,true),'Agregar');}
 function buildMiembro(ex){return{nombre:document.getElementById('e-nombre').value.trim(),registro:document.getElementById('e-registro')?.value||'',artistasAfines:(document.getElementById('e-art-afin')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),cancionesAfines:(document.getElementById('e-can-afin')?.value||'').split(',').map(s=>s.trim()).filter(Boolean),roles:[...document.querySelectorAll('[data-rrow]')].map(r=>({i:r.querySelector('[data-rinst]').value,n:r.querySelector('[data-rnivel]').value})),disp:ex?{...ex.disp}:{jun:null,jul:null,ago:null,sep:null}};}
-function saveMiembro(){const all=[...EQUIPO.voces,...EQUIPO.musicos];const m=all.find(x=>x.id===_id);const b=buildMiembro(m);Object.assign(m,b);closePanel();renderEquipo();}
-function saveNuevoMiembro(){const n=document.getElementById('e-nombre').value.trim();if(!n)return alert('Ingresa un nombre');const b=buildMiembro(null);EQUIPO[_grupo].push({id:'u'+Date.now(),...b});closePanel();renderEquipo();}
-function deleteMiembro(id){if(!confirm('¿Eliminar?'))return;EQUIPO.voces=EQUIPO.voces.filter(x=>x.id!==id);EQUIPO.musicos=EQUIPO.musicos.filter(x=>x.id!==id);closePanel();renderEquipo();}
+function saveMiembro(){const all=[...EQUIPO.voces,...EQUIPO.musicos];const m=all.find(x=>x.id===_id);const b=buildMiembro(m);Object.assign(m,b);closePanel();renderEquipo();fbSave();}
+function saveNuevoMiembro(){const n=document.getElementById('e-nombre').value.trim();if(!n)return alert('Ingresa un nombre');const b=buildMiembro(null);EQUIPO[_grupo].push({id:'u'+Date.now(),...b});closePanel();renderEquipo();fbSave();}
+function deleteMiembro(id){if(!confirm('¿Eliminar?'))return;EQUIPO.voces=EQUIPO.voces.filter(x=>x.id!==id);EQUIPO.musicos=EQUIPO.musicos.filter(x=>x.id!==id);closePanel();renderEquipo();fbSave();}
 function addRolRow(){const id=_rI++;const div=document.createElement('div');div.className='er';div.dataset.rrow=id;div.innerHTML=`<input class="er-wide" data-rinst="${id}" placeholder="Instrumento"><select class="fs" style="width:110px;margin-left:4px;padding:4px 7px;font-size:.68rem" data-rnivel="${id}"><option>Experto</option><option selected>Activo</option><option>En formación</option></select><button class="er-del" onclick="this.closest('[data-rrow]').remove()" style="margin-left:4px">✕</button>`;document.getElementById('roles-rows').appendChild(div);}
 
 // ── SONG PANEL ──
@@ -1603,9 +1676,9 @@ ${c?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12p
 function openSong(id){_mode='song';_id=id;const c=CANCIONES.find(x=>x.id===id);openPanel(`Editar · ${c.nombre}`,`${c.artista||'—'} · ${c.tono}`,songBody(c));}
 function openNuevaSong(){_mode='nueva-song';openPanel('Nueva canción','Agregar al repertorio',songBody(null),'Agregar');}
 function buildSong(c){return{nombre:document.getElementById('s-nombre').value,artista:document.getElementById('s-artista').value,tono:document.getElementById('s-tono').value||'?',bpm:parseInt(document.getElementById('s-bpm').value)||80,energia:document.getElementById('s-eng').value,clasificacion:document.getElementById('s-cls').value,dificultad:document.getElementById('s-dif').value,tema:document.getElementById('s-tema').value,recursos:{multitrack:document.getElementById('s-multitrack').checked,secuencia:document.getElementById('s-secuencia').checked,pads:document.getElementById('s-pads').checked,click:document.getElementById('s-click').checked},version:document.getElementById('s-ver').value,partitura:document.getElementById('s-part').value,secuencias:document.getElementById('s-seq').value};}
-function saveSong(){const c=CANCIONES.find(x=>x.id===_id);Object.assign(c,buildSong(c));closePanel();renderCanciones();}
-function saveNuevaSong(){const n=document.getElementById('s-nombre').value.trim();if(!n)return alert('Nombre requerido');CANCIONES.push({id:'c'+Date.now(),nuevo:true,...buildSong(null)});closePanel();renderCanciones();}
-function deleteCancion(id){if(!confirm('¿Eliminar?'))return;CANCIONES=CANCIONES.filter(c=>c.id!==id);closePanel();renderCanciones();}
+function saveSong(){const c=CANCIONES.find(x=>x.id===_id);Object.assign(c,buildSong(c));closePanel();renderCanciones();fbSave();}
+function saveNuevaSong(){const n=document.getElementById('s-nombre').value.trim();if(!n)return alert('Nombre requerido');CANCIONES.push({id:'c'+Date.now(),nuevo:true,...buildSong(null)});closePanel();renderCanciones();fbSave();}
+function deleteCancion(id){if(!confirm('¿Eliminar?'))return;CANCIONES=CANCIONES.filter(c=>c.id!==id);closePanel();renderCanciones();fbSave();}
 
 // ── ENSAYO PANEL ──
 function ensBody(e){return `<div class="ps"><div class="ps-t">Ensayo</div>
@@ -1624,15 +1697,15 @@ ${e?`<div class="ps" style="border-top:1.5px solid var(--border);padding-top:12p
 function openEnsayo(id){_mode='ensayo';_id=id;const e=ENSAYOS.find(x=>x.id===id);openPanel('Editar ensayo',e.fecha,ensBody(e));}
 function openNuevoEnsayo(){_mode='nuevo-ensayo';openPanel('Nuevo ensayo','Ruta de ensayos',ensBody(null),'Agregar');}
 function buildEnsayo(){const p=v=>v.split(',').map(s=>s.trim()).filter(Boolean);return{fecha:document.getElementById('en-f').value,titulo:document.getElementById('en-t').value,songs_refuerzo:p(document.getElementById('en-r').value),songs_nuevas:p(document.getElementById('en-n').value),notas:document.getElementById('en-no').value};}
-function saveEnsayo(){const e=ENSAYOS.find(x=>x.id===_id);const b=buildEnsayo();b.transiciones=e.transiciones;Object.assign(e,b);closePanel();renderEnsayos();}
-function saveNuevoEnsayo(){ENSAYOS.push({id:'e'+Date.now(),...buildEnsayo(),transiciones:{}});closePanel();renderEnsayos();}
+function saveEnsayo(){const e=ENSAYOS.find(x=>x.id===_id);const b=buildEnsayo();b.transiciones=e.transiciones;Object.assign(e,b);closePanel();renderEnsayos();fbSave();}
+function saveNuevoEnsayo(){ENSAYOS.push({id:'e'+Date.now(),...buildEnsayo(),transiciones:{}});closePanel();renderEnsayos();fbSave();}
 
 // ═══════════════════════════ NAV + THEME ═══════════════════════════
 const HTAB={
   mes:{eye:'Planificación mensual',sub:'Exporta para WhatsApp con 📤'},
   ensayo:{eye:'Ruta estratégica',title:'Ensayos · Jun–Sep 2025',sub:'Transiciones automáticas + enriquecimiento Gemini'},
   equipo:{eye:'Ministerio de Alabanza',title:'Equipo TDF Worship',sub:'Marca tu disponibilidad directamente'},
-  canciones:{eye:'Base musical',title:'Repertorio Activo',sub:'Ver versión · Partitura PDF · Secuencias.com'},
+  canciones:{eye:'Base musical',title:'Repertorio Activo',sub:'Ver versión · Partitura PDF · Secuencias.com'}
 };
 function showTab(id){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1653,7 +1726,23 @@ function toggleTheme(){
 function renderAll(){renderMonthNav();renderDomingos();renderEnsayos();renderCanciones();renderEquipo();}
 
 // ═══════════════════════════ INIT ═══════════════════════════
-renderMonthNav();renderDomingos();renderEnsayos();renderCanciones();
+function startApp() {
+  renderMonthNav();
+  // Try Firebase, fall back to local data if unavailable
+  if (typeof firebase !== 'undefined') {
+    fbLoad();
+  } else {
+    console.warn('Firebase not available — using local data');
+    renderAll();
+    renderCronograma();
+  }
+}
+// Start after DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}
 </script>
 </body>
 </html>
