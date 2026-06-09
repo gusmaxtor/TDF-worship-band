@@ -758,6 +758,7 @@ window.MUSIC_ENGINE={
 };
 
 let GEMINI_KEY = localStorage.getItem('tdf_gk')||'';
+const DATA_VERSION = 3; // bump when seed data (EQUIPO/CANCIONES) structure changes
 const LDR_COLORS = ['#30dad8','#f4cd27','#ff004b','#8740bf','#4CAF50','#FF9800','#E91E63','#00BCD4'];
 
 
@@ -798,7 +799,7 @@ async function fbLoad() {
   try {
     initFirebase();
     const snap = await db.collection('tdf').doc('data').get();
-    if (snap.exists()) {
+    if (snap.exists && (snap.data().version||0) >= DATA_VERSION) {
       const d = snap.data();
       if (d.DOMINGOS) Object.assign(DOMINGOS, d.DOMINGOS);
       if (d.EQUIPO)   Object.assign(EQUIPO, d.EQUIPO);
@@ -806,7 +807,7 @@ async function fbLoad() {
       // Load CANCIONES from separate doc
       try {
         const cSnap = await db.collection('tdf').doc('canciones').get();
-        if (cSnap.exists() && cSnap.data().CANCIONES) {
+        if (cSnap.exists && cSnap.data().CANCIONES) {
           CANCIONES.length=0; CANCIONES.push(...cSnap.data().CANCIONES);
         } else if (d.CANCIONES) {
           CANCIONES.length=0; CANCIONES.push(...d.CANCIONES);
@@ -814,8 +815,11 @@ async function fbLoad() {
       } catch(e) { if(d.CANCIONES){CANCIONES.length=0;CANCIONES.push(...d.CANCIONES);} }
       console.log('✓ Datos cargados desde Firebase');
     } else {
-      console.log('Firebase vacío — usando datos locales, guardando...');
-      fbSave(); // First-time save
+      console.log('Firebase desactualizado o vacío — migrando datos locales (v'+DATA_VERSION+')');
+      // Keep current code's seed data, save it as the new version
+      isEditor=true; // temp enable to allow save
+      await fbSave();
+      isEditor=false;
     }
   } catch(err) {
     console.warn('Firebase load error:', err.message);
@@ -835,6 +839,7 @@ async function fbSave() {
       DOMINGOS: JSON.parse(JSON.stringify(DOMINGOS)),
       EQUIPO:   JSON.parse(JSON.stringify(EQUIPO)),
       ENSAYOS:  JSON.parse(JSON.stringify(ENSAYOS)),
+      version: DATA_VERSION,
       updatedAt: new Date().toISOString()
     };
     await db.collection('tdf').doc('data').set(payload);
@@ -2025,7 +2030,7 @@ function domBody(d,fecha,esCena){
   const fcorta=_idx!=null?(mesObj()?.fechas[_idx]||'').replace(' 2025',''):'';
   let bH='';
   (d?d.banda:[]).forEach((b,i)=>{
-    bH+=buildBandaRow(i, b.icon||'🎵', b.rol||'', b.nombre||'', fcorta);
+    bH+=`<div class="er" data-brow="${i}">${buildBandaRow(i, b.icon||'🎵', b.rol||'', b.nombre||'', fcorta)}</div>`;
   });
   let sH='';
   (d?d.canciones:[]).forEach((c,i)=>{
