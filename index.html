@@ -310,14 +310,14 @@ main{padding:12px 16px}
 .fi:focus{border-color:var(--purple)}
 .fta{width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:.72rem;color:var(--text);background:var(--bg2);resize:vertical;min-height:60px}
 .fta:focus{border-color:var(--purple)}
-.fs{width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:.75rem;color:var(--text);background:var(--bg2)}
-.fs:focus{border-color:var(--purple)}
+.fs{width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:.75rem;color:var(--text);background:var(--bg2)}.fs option{background:var(--surface);color:var(--text)}
+.fs:focus{border-color:var(--purple)}select{color-scheme:dark}
 .outfit-row{display:flex;gap:6px;align-items:center}
 .cswatch{width:30px;height:30px;border-radius:6px;border:2px solid var(--border);padding:2px;background:none;flex-shrink:0}
 .edit-rows{display:flex;flex-direction:column;gap:3px}
 .er{display:flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px 7px}
 .er-ico{font-size:.7rem;width:13px;text-align:center;flex-shrink:0}
-.er-sel{flex:1;border:none;background:transparent;font-size:.72rem;font-weight:600;color:var(--text);min-width:0}
+.er-sel{flex:1;border:none;background:var(--bg2);font-size:.72rem;font-weight:600;color:var(--text);min-width:0;border-radius:4px;padding:1px 3px}.er-sel option{background:var(--surface);color:var(--text)}.er-sel option:disabled{color:var(--text4)}
 .er-in{border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:.63rem;background:var(--bg3);color:var(--text2)}
 .er-wide{flex:1;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:.63rem;background:var(--bg3);color:var(--text2)}
 .er-del{background:none;border:none;color:var(--text4);font-size:.78rem;transition:color .18s;flex-shrink:0}
@@ -424,6 +424,10 @@ main{padding:12px 16px}
     <div class="brand-sub">Planificador · Jhonatan Pardo</div>
   </div>
   <div class="hdr-right">
+    <div id="cloud-status" title="Estado de guardado" style="display:flex;align-items:center;gap:3px;font-size:.58rem;font-weight:700;color:rgba(255,255,255,.4);margin-right:4px;transition:all .3s">
+      <span id="cloud-icon">☁</span>
+      <span id="cloud-txt" style="font-size:.5rem;letter-spacing:.04em"></span>
+    </div>
     <button class="nav-btn active" onclick="showTab('mes')">Mes</button>
     <button class="nav-btn" onclick="showTab('ensayo')">Ensayos</button>
     <button class="nav-btn" onclick="showTab('equipo')">Equipo</button>
@@ -772,12 +776,20 @@ const firebaseConfig = {
 let db = null;
 function initFirebase() {
   try {
-    const fbApp = firebase.initializeApp(firebaseConfig);
+    if(!firebase.apps||firebase.apps.length===0){
+      firebase.initializeApp(firebaseConfig);
+    }
     db = firebase.firestore();
-    console.log('Firebase ready');
+    // Enable offline persistence
+    db.enablePersistence({synchronizeTabs:true}).catch(err=>{
+      if(err.code!=='failed-precondition'&&err.code!=='unimplemented'){
+        console.warn('Persistence error:',err);
+      }
+    });
+    console.log('✓ Firebase + Firestore ready');
   } catch(e) {
-    // Already initialized
-    db = firebase.firestore();
+    console.error('Firebase init error:',e);
+    try{ db=firebase.firestore(); }catch(e2){}
   }
 }
 
@@ -815,8 +827,8 @@ async function fbLoad() {
 // Save all data to Firestore (editors only)
 async function fbSave() {
   if (!isEditor) return;
-  if (!db) { console.warn('Firebase db not ready'); showSaveToast('⚠ Sin conexión — datos solo en memoria'); return; }
-  showSaveToast('💾 Guardando…');
+  if (!db) { console.warn('Firebase db not ready'); showSaveToast('⚠ Sin conexión — datos solo en memoria');updateCloudStatus('offline'); return; }
+  showSaveToast('💾 Guardando…');updateCloudStatus('saving');
   try {
     // Split into smaller saves to avoid 1MB limit
     const payload = {
@@ -830,10 +842,31 @@ async function fbSave() {
     await db.collection('tdf').doc('canciones').set({
       CANCIONES: JSON.parse(JSON.stringify(CANCIONES))
     });
-    showSaveToast('✓ Guardado en la nube');
+    showSaveToast('✓ Guardado en la nube');updateCloudStatus('saved');
   } catch(err) {
     console.error('fbSave error:', err);
-    showSaveToast('✗ Error: ' + err.message);
+    showSaveToast('✗ Error: ' + err.message);updateCloudStatus('error');
+  }
+}
+
+function updateCloudStatus(state){
+  // state: 'saving' | 'saved' | 'error' | 'offline'
+  const icon=document.getElementById('cloud-icon');
+  const txt=document.getElementById('cloud-txt');
+  const wrap=document.getElementById('cloud-status');
+  if(!icon||!txt||!wrap) return;
+  const states={
+    saving:  {ico:'⟳',color:'rgba(255,255,255,.5)', txt:''},
+    saved:   {ico:'☁✓',color:'#30dad8',             txt:''},
+    error:   {ico:'☁✗',color:'#ff004b',             txt:''},
+    offline: {ico:'☁',color:'rgba(255,255,255,.25)', txt:''},
+  };
+  const st=states[state]||states.offline;
+  icon.textContent=st.ico;
+  wrap.style.color=st.color;
+  txt.textContent=st.txt;
+  if(state==='saved'){
+    setTimeout(()=>{icon.textContent='☁';wrap.style.color='rgba(255,255,255,.3)';},4000);
   }
 }
 
@@ -956,12 +989,12 @@ let EQUIPO={
     {id:'v1',nombre:'David García',registro:'tenor',artistasAfines:['Elevation','Lakewood'],cancionesAfines:['Praise','Decimos Amén','Nada es Imposible','Hay Algo Nuevo','Todopoderoso','Vamos a Cantar'],roles:[{i:'Voz principal',n:'Experto'},{i:'Guitarra eléctrica',n:'Activo'}],disp:{jun:['7 Jun','14 Jun','28 Jun'],jul:null,ago:null,sep:null}},
     {id:'v2',nombre:'Majito (María José)',registro:'soprano',artistasAfines:['Hillsong','Bethel'],cancionesAfines:['Buen Buen Padre','Ven y Lléname','Constante Amor','Amor Como Fuego','Como en el Cielo'],roles:[{i:'Voz principal',n:'Experto'}],disp:{jun:null,jul:null,ago:null,sep:null}},
     {id:'v3',nombre:'Miguel Méndez',registro:'barítono',artistasAfines:['Marcos Witt','Marco Barrientos'],cancionesAfines:['Glorioso','Único Dios','Solo Hay Uno','Yo Te Amo','Eres Fiel'],roles:[{i:'Voz',n:'Activo'},{i:'Bajo',n:'Activo'}],disp:{jun:['7 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
-    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['14 Jun'],jul:null,ago:null,sep:null}}
+    {id:'v4',nombre:'Juan David Moreno',registro:'tenor',artistasAfines:['Israel Houghton','Paul Wilbur'],cancionesAfines:['Agnus Dei','Jesucristo Basta','Sublime Gracia','Gracia Sublime','Siempre que me Mires'],roles:[{i:'Voz',n:'Experto'},{i:'Guitarra acústica',n:'Experto'}],disp:{jun:['14 Jun'],jul:null,ago:null,sep:null}},
+    {id:'v6',nombre:'Alejandro Lizarazo',registro:'',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
+    {id:'v5',nombre:'Camilo Puentes',registro:'tenor',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:['7 Jun'],jul:null,ago:null,sep:null}}
   ],
   musicos:[
-    {id:'v6',nombre:'Alejandro Lizarazo',registro:'',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
-  {id:'v5',nombre:'Camilo Puentes',registro:'tenor',artistasAfines:[],cancionesAfines:[],roles:[{i:'Voz',n:'En formación'}],disp:{jun:['7 Jun'],jul:null,ago:null,sep:null}},
-  {id:'m1',nombre:'Daniel García',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Experto'}],disp:{jun:['7 Jun','14 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
+        {id:'m1',nombre:'Daniel García',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Experto'}],disp:{jun:['7 Jun','14 Jun','21 Jun','28 Jun'],jul:null,ago:null,sep:null}},
     {id:'m2',nombre:'Jason',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Batería',n:'Activo'}],disp:{jun:['14 Jun','21 Jun'],jul:null,ago:null,sep:null}},
     {id:'m3',nombre:'Johan Sebastián',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Guitarra',n:'Activo'},{i:'Piano / Teclado',n:'En formación'}],disp:{jun:null,jul:null,ago:null,sep:null}},
     {id:'m4',nombre:'David Méndez',registro:null,artistasAfines:[],cancionesAfines:[],roles:[{i:'Bajo',n:'Activo'}],disp:{jun:['7 Jun','28 Jun'],jul:null,ago:null,sep:null}},
@@ -1597,10 +1630,10 @@ function buildBandaRow(id, icon, rol, selectedNombre, fechaCorta){
   if(rol && !roles.includes(rol)) rolOpts+=`<option value="${rol}" selected>${rol}</option>`;
   const autoIcon=rolToIcon(rol)||icon||'🎵';
 
-  return `<span class="er-ico" id="ico-${id}">${autoIcon}</span>
-    <select class="er-sel" style="max-width:105px" data-brol="${id}" onchange="onBandaRolChange(this)">${rolOpts}</select>
-    <select class="er-sel" data-bsel="${id}">${opts}</select>
-    <button class="er-del" onclick="this.closest('[data-brow]').remove()">✕</button>`;
+  return `<span class="er-ico" id="ico-${id}" style="font-size:.9rem;width:20px;text-align:center;flex-shrink:0">${autoIcon}</span>
+    <select class="er-sel" style="max-width:110px;border:1px solid var(--border);border-radius:5px" data-brol="${id}" onchange="onBandaRolChange(this)">${rolOpts}</select>
+    <select class="er-sel" style="flex:1;border:1px solid var(--border);border-radius:5px" data-bsel="${id}">${opts}</select>
+    <button class="er-del" onclick="this.closest('[data-brow]').remove()" style="font-size:.9rem;padding:0 4px">✕</button>`;
 }
 
 // When rol changes, rebuild musician dropdown filtered by that instrument
