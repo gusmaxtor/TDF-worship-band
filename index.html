@@ -489,10 +489,19 @@ main{padding:12px 16px}
   </section>
   <section id="tab-canciones" class="tab">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;gap:8px;flex-wrap:wrap">
-      <div><div style="font-size:1.05rem;font-weight:800">Repertorio</div><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:1px">25 canciones · Edición directa</div></div>
+      <div><div style="font-size:1.05rem;font-weight:800">Repertorio</div><div style="font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:1px">${CANCIONES.length} canciones · Edición directa</div></div>
       <button class="editor-only" onclick="openNuevaSong()" style="background:var(--purple);border:none;color:#fff;padding:5px 11px;border-radius:7px;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">+ Canción</button>
     </div>
-    <div class="song-grid" id="song-grid"></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input id="canc-search" type="text" placeholder="🔍 Canción, artista, tono..." oninput="renderCanciones()" style="flex:1;min-width:140px;padding:7px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:.72rem;color:var(--text);background:var(--bg2)">
+      <select id="canc-tipo" onchange="renderCanciones()" style="padding:7px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:.72rem;color:var(--text);background:var(--bg2)">
+        <option value="all">Todas</option>
+        <option value="Rápida">⚡ Rápidas</option>
+        <option value="Media">〰 Medias</option>
+        <option value="Lenta">🕊 Lentas</option>
+      </select>
+    </div>
+    <div id="song-grid"></div>
   </section>
 </main>
 
@@ -1013,7 +1022,7 @@ let CANCIONES = [
   {id:'c02',nombre:'Al estar ante ti',artista:'Jesus Adrian Romero',tono:'D',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Intimidad y Adoración',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c03',nombre:'Al mundo paz',artista:'Marcos Witt',tono:'Db',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Paz',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c04',nombre:'Al que está sentado en el trono',artista:'Marcos Brunet',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Soberanía y Gloria',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c05',nombre:'Amor como Fuego',artista:'BJ Putnam',tono:'B',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Amor de Dios / Rendición',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/results?search_query=Amor+Como+Fuego+BJ+Putnam+español',partitura:'https://drive.google.com/file/d/1PUSR_kQW1sKkPgyNqZmUf9cOCMuT8IyZ/view',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11790882'},
+  {id:'c05',nombre:'Amor como Fuego',artista:'BJ Putnam',tono:'B',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Amor de Dios / Rendición',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/watch?v=c7N2PrRN7Wk',partitura:'https://drive.google.com/file/d/1PUSR_kQW1sKkPgyNqZmUf9cOCMuT8IyZ/view',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11790882'},
   {id:'c06',nombre:'Anastasis',artista:'Hillsong en Español',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Resurrección / Victoria',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c07',nombre:'Buen Buen Padre',artista:'Chris Tomlin',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Paternidad de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'https://drive.google.com/file/d/1DV1m3BHZ4tOz4O9wJ8jAOe3muc8TSClb/view',secuencias:''},
   {id:'c08',nombre:'Con mis manos levantadas',artista:'Danilo Montero',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Rendición y Adoración',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
@@ -1037,7 +1046,7 @@ let CANCIONES = [
   {id:'c26',nombre:'Hermoso eres',artista:'Marcos Witt',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Belleza de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c27',nombre:'Hermoso Nombre',artista:'Hillsong en Español',tono:'D',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Adoración / Nombre',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c28',nombre:'Impresionante',artista:'',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Asombro y Admiración',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c29',nombre:'Jesucristo Basta',artista:'Un Corazón',tono:'Ab',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Suficiencia de Cristo',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/results?search_query=Jesucristo+Basta+Un+Corazon',partitura:'https://drive.google.com/file/d/1bFOi3KYskUwjzGt7WNClKcqU2b3QNmCe/view',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=2838333'},
+  {id:'c29',nombre:'Jesucristo Basta',artista:'Un Corazón',tono:'Ab',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Suficiencia de Cristo',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/watch?v=XE9RAT1aFvo',partitura:'https://drive.google.com/file/d/1bFOi3KYskUwjzGt7WNClKcqU2b3QNmCe/view',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=2838333'},
   {id:'c30',nombre:'Jesús es el centro',artista:'',tono:'F',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Exaltación / Señorío',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=8526785'},
   {id:'c31',nombre:'Jesús señor de la creación',artista:'Marcos Witt',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Soberanía y Creación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c32',nombre:'La bondad de Dios',artista:'',tono:'Ab',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Bondad de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
@@ -1048,19 +1057,19 @@ let CANCIONES = [
   {id:'c37',nombre:'Mi máximo amor',artista:'Sebastián Golluscio',tono:'E',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Amor a Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c38',nombre:'Mi roca',artista:'Hillsong',tono:'C',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Fortaleza / Protección',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c39',nombre:'No hay lugar más alto',artista:'Marcos Barrientos',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Exaltación / Supremacía',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=3551703'},
-  {id:'c40',nombre:'Preciosa Sangre',artista:'Sheila Romero',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Redención / Sacrificio',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/results?search_query=Preciosa+Sangre+Sheila+Romero',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11778048'},
+  {id:'c40',nombre:'Preciosa Sangre',artista:'Sheila Romero',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Redención / Sacrificio',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/watch?v=R8b0vBg8qr4',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11778048'},
   {id:'c41',nombre:'Revelación',artista:'Danilo Montero',tono:'E',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Conocimiento y Revelación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c42',nombre:'Santo Espíritu',artista:'',tono:'C',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Adoración y Guía Espiritual',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c43',nombre:'Santo Señor Omnipotente',artista:'',tono:'C',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Santidad y Soberanía',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c44',nombre:'Sin reservas',artista:'',tono:'Em',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Rendición y Entrega',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/results?search_query=Sin+Reservas+Marco+Barrientos',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11778070'},
+  {id:'c44',nombre:'Sin reservas',artista:'',tono:'Em',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Rendición y Entrega',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/watch?v=0VWMtCCYH6c',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11778070'},
   {id:'c45',nombre:'Sobre Todo',artista:'Aline Barros',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Supremacía y Exaltación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c46',nombre:'Sublime Gracia',artista:'Blest',tono:'F',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Gracia y Salvación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/results?search_query=Sublime+Gracia+Phil+Wickham+español',partitura:'https://drive.google.com/file/d/1d-QH-FTe8M1rc0YpHbtW3vCY-MuXMYQ4/view',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11778078'},
+  {id:'c46',nombre:'Sublime Gracia',artista:'Blest',tono:'F',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Gracia y Salvación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/watch?v=6uCnGiSBSfc',partitura:'https://drive.google.com/file/d/1d-QH-FTe8M1rc0YpHbtW3vCY-MuXMYQ4/view',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=11778078'},
   {id:'c47',nombre:'Te entrego mi ser',artista:'',tono:'G',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Consagración y Entrega',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c48',nombre:'Tu fidelidad',artista:'',tono:'E',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Fidelidad y Confianza',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c49',nombre:'Ven ante su trono',artista:'Elevation Worship',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Adoración e Invocación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c50',nombre:'Viento Fresco',artista:'',tono:'C',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Renovación Espiritual',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c51',nombre:'Vine a Adorarte',artista:'Marcela Gandara',tono:'E',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Adoración y Rendición',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c52',nombre:'Way Maker',artista:'Priscilla Bueno',tono:'C',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Providencia y Milagros',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/results?search_query=Way+Maker+Priscilla+Ahn+español',partitura:'',secuencias:''},
+  {id:'c52',nombre:'Way Maker',artista:'Priscilla Bueno',tono:'C',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Providencia y Milagros',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'https://www.youtube.com/watch?v=u6BKBs06bAU',partitura:'',secuencias:''},
   {id:'c53',nombre:'Yo me rindo',artista:'',tono:'A',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Rendición y Entrega',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c54',nombre:'Abre mis ojos',artista:'',tono:'E',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Revelación y Claridad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c55',nombre:'Bienvenido Espíritu Santo',artista:'Marcos Barrientos',tono:'C',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Invocación del Espíritu',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
@@ -1071,14 +1080,14 @@ let CANCIONES = [
   {id:'c60',nombre:'En tu nombre',artista:'',tono:'A',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Autoridad e Invocación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c61',nombre:'Eres Fiel',artista:'Israel Houghton',tono:'D',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Fidelidad y Confianza',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1y2u0ZBfLVDSpmSf-RgIJ7NtKqcXcywg-/view',secuencias:''},
   {id:'c62',nombre:'Espíritu y verdad',artista:'Marcos Barrientos',tono:'G',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Adoración Espiritual',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c63',nombre:'Glorioso',artista:'BJ Putnam',tono:'A',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Gloria de Dios / Exaltación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/results?search_query=Glorioso+BJ+Putnam+español',partitura:'https://drive.google.com/file/d/1OjgOiwRu0QYPj__Cr6KbLLVgNp1fy18t/view',secuencias:''},
+  {id:'c63',nombre:'Glorioso',artista:'BJ Putnam',tono:'A',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Gloria de Dios / Exaltación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/watch?v=2sR4vkFbv68',partitura:'https://drive.google.com/file/d/1OjgOiwRu0QYPj__Cr6KbLLVgNp1fy18t/view',secuencias:''},
   {id:'c64',nombre:'Gracia Sublime Es',artista:'Phil Wickham',tono:'Ab',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Gracia y Salvación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1mIEDKy5SzbMgLNrM9ya3wq4n9teWCjDp/view',secuencias:''},
   {id:'c65',nombre:'Increíble',artista:'',tono:'C',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Asombro y Maravilla',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c66',nombre:'Jesús es el Señor',artista:'',tono:'G',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Declaración de Fe / Señorío',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c67',nombre:'Me rindo a ti',artista:'',tono:'C',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Rendición y Entrega',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c68',nombre:'Nada es Imposible',artista:'Marcos Barrientos',tono:'A',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Fe / Poder / Omnipotencia',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1Tv0oqGFLYcNvLO_soVm5wlSpjg9XFP5y/view',secuencias:''},
   {id:'c69',nombre:'Nuestro Dios',artista:'Chris Tomlin',tono:'A',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Adoración y Exaltación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
-  {id:'c70',nombre:'Praise',artista:'Elevation Worship',tono:'D',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Alabanza / Celebración',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/results?search_query=Praise+Elevation+Worship+español',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=5557527'},
+  {id:'c70',nombre:'Praise',artista:'Elevation Worship',tono:'D',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Alabanza / Celebración',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/watch?v=_SFQPfNOIlw',partitura:'',secuencias:'https://www.secuencias.com/premium/library/tracks.aspx?libraryID=5557527'},
   {id:'c71',nombre:'Que se Llene Tu Casa',artista:'Ingrid Rosario',tono:'Eb',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Presencia de Dios / Invocación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c72',nombre:'Rey de reyes',artista:'Marcos Barrientos',tono:'D',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Soberanía y Exaltación',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c73',nombre:'Solo Hay Uno',artista:'Miel San Marcos',tono:'Db',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Unicidad de Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1SREy8VW5pu7jpozGatqDF1YVOk55zv9a/view',secuencias:''},
@@ -1086,8 +1095,8 @@ let CANCIONES = [
   {id:'c75',nombre:'Todopoderoso',artista:'Lakewood Music',tono:'E',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Poder / Victoria',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c76',nombre:'Único Dios',artista:'Marcos Barrientos',tono:'A',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Exaltación y Unicidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1pnA8O2MhrMk7GjmSP4_Ag3BT4a-_GU4S/view',secuencias:''},
   {id:'c77',nombre:'Vamos a Cantar',artista:'',tono:'D',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Celebración y Alegría',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'https://drive.google.com/file/d/1xXj-KmNKYtxe8xLYn5VDJFdkQQDfqQ6L/view',secuencias:''},
-  {id:'c78',nombre:'Hay Algo Nuevo',artista:'Elevation Worship',tono:'C',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Renovación / Obra de Dios',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/results?search_query=Hay+Algo+Nuevo+Elevation+Worship+español',partitura:'',secuencias:''},
-  {id:'c79',nombre:'Como en el Cielo',artista:'Elevation Worship',tono:'G',bpm:85,energia:'Media',clasificacion:'Media',dificultad:'Fácil',tema:'Reino de Dios / Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/results?search_query=Como+en+el+Cielo+Elevation+Worship+español',partitura:'',secuencias:''},
+  {id:'c78',nombre:'Hay Algo Nuevo',artista:'Elevation Worship',tono:'C',bpm:120,energia:'Alta',clasificacion:'Rápida',dificultad:'Media',tema:'Renovación / Obra de Dios',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/watch?v=UdZJKZlyNO0',partitura:'',secuencias:''},
+  {id:'c79',nombre:'Como en el Cielo',artista:'Elevation Worship',tono:'G',bpm:85,energia:'Media',clasificacion:'Media',dificultad:'Fácil',tema:'Reino de Dios / Adoración',nuevo:true,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'https://www.youtube.com/watch?v=MNF0FJJlwQ0',partitura:'',secuencias:''},
   {id:'c80',nombre:'Ven y Lléname',artista:'',tono:'D',bpm:70,energia:'Baja',clasificacion:'Lenta',dificultad:'Fácil',tema:'Presencia del Espíritu',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:true,click:true},version:'',partitura:'',secuencias:''},
   {id:'c81',nombre:'Siempre que me Mires',artista:'',tono:'F',bpm:85,energia:'Media',clasificacion:'Media',dificultad:'Fácil',tema:'Amor de Dios / Identidad',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
   {id:'c82',nombre:'Yo Te Amo',artista:'',tono:'C',bpm:85,energia:'Media',clasificacion:'Media',dificultad:'Fácil',tema:'Amor a Dios',nuevo:false,recursos:{multitrack:false,secuencia:false,pads:false,click:true},version:'',partitura:'',secuencias:''},
@@ -1345,8 +1354,9 @@ function renderEnsayos(){
 
   function parseDate(str){
     const m=str.match(/(\d+)\s+(\w{3})/);
-    if(!m) return new Date(2025,5,1);
-    return new Date(2025,(monthMap[m[2]]??5),parseInt(m[1]));
+    if(!m) return new Date();
+    const yr=new Date().getFullYear();
+    return new Date(yr,(monthMap[m[2]]??5),parseInt(m[1]));
   }
 
   let upcomingH='', pastH='', pastCount=0;
@@ -1520,6 +1530,49 @@ function renderEquipo(){
 
 // ═══════════════════════════ RENDER CANCIONES ═══════════════════════════
 function renderCanciones(){
+  const box=document.getElementById('song-grid')||document.getElementById('canc-box');
+  if(!box) return;
+  const searchEl=document.getElementById('canc-search');
+  const tipoEl=document.getElementById('canc-tipo');
+  const search=(searchEl?.value||'').toLowerCase().trim();
+  const tipoFilter=tipoEl?.value||'all';
+  const filtered=CANCIONES.filter(c=>{
+    if(tipoFilter!=='all' && c.clasificacion!==tipoFilter) return false;
+    if(search && !c.nombre.toLowerCase().includes(search) && !(c.artista||'').toLowerCase().includes(search) && !(c.tono||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+  const grupos={Rapida:[],Media:[],Lenta:[]};
+  filtered.forEach(c=>{
+    const g=c.clasificacion==='Rápida'?'Rapida':c.clasificacion==='Lenta'?'Lenta':'Media';
+    grupos[g].push(c);
+  });
+  function songCard(c){
+    const lks=[];
+    if(c.version) lks.push('<a href="'+c.version+'" target="_blank" style="font-size:.5rem;padding:1px 4px;border-radius:3px;background:rgba(255,0,75,.1);color:#ff6688;text-decoration:none">▶ YT</a>');
+    if(c.partitura) lks.push('<a href="'+c.partitura+'" target="_blank" style="font-size:.5rem;padding:1px 4px;border-radius:3px;background:rgba(100,120,255,.1);color:#aabbff;text-decoration:none">♩ PDF</a>');
+    if(c.secuencias) lks.push('<a href="'+c.secuencias+'" target="_blank" style="font-size:.5rem;padding:1px 4px;border-radius:3px;background:rgba(48,218,216,.1);color:var(--teal);text-decoration:none">🎵 SEQ</a>');
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;flex-direction:column;gap:3px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">'
+      +'<div style="font-size:.72rem;font-weight:700;line-height:1.2;flex:1">'+c.nombre+'</div>'
+      +'<span style="font-size:.55rem;font-weight:700;background:rgba(19,37,137,.5);color:#aabbff;padding:1px 5px;border-radius:3px;flex-shrink:0">'+c.tono+'</span>'
+      +'</div>'
+      +'<div style="font-size:.56rem;color:var(--text3)">'+(c.artista||'')+'</div>'
+      +(lks.length?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:2px">'+lks.join('')+'</div>':'')
+      +'</div>';
+  }
+  const labels={Rapida:'⚡ Rápidas',Media:'〰 Medias',Lenta:'🕊 Lentas'};
+  const colors={Rapida:'#f4cd27',Media:'var(--purple)',Lenta:'var(--teal)'};
+  let html='';
+  ['Rapida','Media','Lenta'].forEach(g=>{
+    if(!grupos[g].length) return;
+    html+='<div style="margin-bottom:16px">'
+      +'<div style="font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:'+colors[g]+';margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">'+labels[g]+' <span style="font-weight:400;opacity:.6">('+grupos[g].length+')</span></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">'+grupos[g].map(songCard).join('')+'</div>'
+      +'</div>';
+  });
+  if(!filtered.length) html='<div style="text-align:center;padding:40px;color:var(--text3);font-size:.75rem">No se encontraron canciones.</div>';
+  box.innerHTML=html;
+}function renderCanciones(){
   document.getElementById('song-grid').innerHTML=CANCIONES.map((c,i)=>{
     const eL=c.energia==='Alta'?3:c.energia==='Media'?2:1;
     const eS=c.energia==='Alta'?'ea':c.energia==='Media'?'em':'eb';
