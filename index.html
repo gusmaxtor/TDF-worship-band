@@ -1467,7 +1467,13 @@ function saveTransicion(){
 }
 
 // ═══════════════════════════ RENDER EQUIPO ═══════════════════════════
+function needEditor(){
+  showSaveToast('🔒 Ingresa el PIN de editor para hacer cambios');
+  toggleAuth();
+}
+
 function saveDispInline(mId,fecha,on){
+  if(!isEditor){ showSaveToast('🔒 Necesitas el PIN de editor'); return; }
   const all=[...EQUIPO.voces,...EQUIPO.musicos];
   const m=all.find(x=>x.id===mId);if(!m)return;
   if(!m.disp[activeMes]) m.disp[activeMes]=[];
@@ -1483,11 +1489,15 @@ function renderEquipo(){
     const init=m.nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const rolesH=m.roles.map(r=>`<div class="eq-role"><span class="eq-role-n">${r.i}</span><span class="lp ${lpC(r.n)}">${r.n}</span></div>`).join('');
     const dispMes=m.disp[activeMes];
-    // Inline disp toggles — EVERYONE can toggle their own availability
+    // Disp toggles — only editors can change availability
     const chipsH=fechasMes.map(f=>{
       const isOn=dispMes&&dispMes.includes(f);
       const isPend=!dispMes;
-      return `<button class="dtog ${isOn?'on':isPend?'pend':''}" onclick="this.classList.toggle('on');saveDispInline('${m.id}','${f}',this.classList.contains('on'))">${f}</button>`;
+      if(isEditor){
+        return `<button class="dtog ${isOn?'on':isPend?'pend':''}" onclick="this.classList.toggle('on');saveDispInline('${m.id}','${f}',this.classList.contains('on'))">${f}</button>`;
+      } else {
+        return `<button class="dtog ${isOn?'on':isPend?'pend':''}" style="opacity:.65;cursor:default" onclick="needEditor()">${f}</button>`;
+      }
     }).join('');
     const afinH=(m.cancionesAfines?.length)?`<div class="eq-afines">${m.cancionesAfines.slice(0,4).map(n=>`<span class="afin-chip">${n}</span>`).join('')}${m.cancionesAfines.length>4?`<span class="afin-chip">+${m.cancionesAfines.length-4}</span>`:''}</div>`:'';
     return `<div class="eq-card" style="animation-delay:${i*.04}s">
