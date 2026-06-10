@@ -1288,6 +1288,7 @@ function renderDomingos(){
         <span class="sl-ldr-dot" style="background:${col}${hasBorder}" title="${c.lider?'Líder: '+c.lider:''}"></span>
         <span class="sl-name">${c.nombre}</span>
         ${(()=>{const cd=songData(c.nombre);return cd?`<span style="font-size:.5rem;font-weight:700;background:rgba(19,37,137,.5);color:#aabbff;padding:1px 4px;border-radius:3px;flex-shrink:0">${cd.tono}</span>`:''})()}
+        ${(()=>{const cd=songData(c.nombre);if(!cd)return '';const lks=[];if(cd.version)lks.push(`<a href="${cd.version}" target="_blank" onclick="event.stopPropagation()" title="YouTube" style="font-size:.5rem;padding:0 3px;border-radius:3px;background:rgba(255,0,75,.12);color:#ff6688;text-decoration:none;flex-shrink:0">▶</a>`);if(cd.partitura)lks.push(`<a href="${cd.partitura}" target="_blank" onclick="event.stopPropagation()" title="Partitura" style="font-size:.5rem;padding:0 3px;border-radius:3px;background:rgba(100,120,255,.12);color:#aabbff;text-decoration:none;flex-shrink:0">♩</a>`);if(cd.secuencias)lks.push(`<a href="${cd.secuencias}" target="_blank" onclick="event.stopPropagation()" title="Secuencias" style="font-size:.5rem;padding:0 3px;border-radius:3px;background:rgba(48,218,216,.12);color:var(--teal);text-decoration:none;flex-shrink:0">🎵</a>`);return lks.join('');})()}
         <span class="sl-nota">${c.nota}</span>
         ${c.planb?`<span class="sl-planb">/ ${c.planb}</span>`:''}
         <span class="e-dot ${c.energia==='Alta'?'ea':c.energia==='Media'?'em':'eb'}"></span>
